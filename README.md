@@ -10,6 +10,43 @@ Python 3 (3.6 and above) CLI app to manage GitHub issue labels 📝
 $ pip install labels
 ```
 
+## Docker
+
+Docker images are available from GitHub and DockerHub.
+
+```console
+docker run -it -e LABELS_USERNAME=${GITHUB_USERNAME} \
+  -e LABELS_TOKEN=${GITHUB_TOKEN} \
+  -v labels.toml:/home/user/labels.toml:ro \
+  docker.pkg.github.com/tprasadtp/labels/labels:latest \
+  sync -o REPO_OWNER -r REPONAME
+
+```
+
+## Actions
+
+You can install this as Github Actions.
+
+```yaml
+on:
+  push:
+    paths:
+    - '.github/labels.toml'
+name: labels
+jobs:
+  labels:
+    name: Sync Labels
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: sync labels
+      uses: tprasadtp/labels@master
+      with:
+        owner: "OWNERNAME"
+        repo: "REPONAME"
+        token: ${{ secrets.GITHUB_TOKEN }}
+```
+
 ## Authentication
 
 The labels CLI connects to the GitHub API to modify issue labels for a GitHub

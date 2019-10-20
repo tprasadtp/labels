@@ -1,0 +1,118 @@
+["Config: Issue"]
+color = "a6bc27"
+name = "Config: Issue"
+description = "Config Issue"
+
+["Meta: Automation"]
+color = "C8A2C8"
+name = "Meta: Automation"
+description = "Automation"
+
+["Meta: Duplicate"]
+color = "C8A2C8"
+name = "Meta: Duplicate"
+description = "Issue or PR is duplicate"
+
+["Meta: Lock"]
+color = "C8A2C8"
+name = "Meta: Lock"
+description = "Issue is locked"
+
+["Priority: Critical"]
+color = "eb6420"
+name = "Priority: Critical"
+description = "Urgent/Extremely important"
+
+["Priority: Low"]
+color = "009800"
+name = "Priority: Low"
+description = "Low prioirty tasks"
+
+["Priority: Medium"]
+color = "fbca04"
+name = "Priority: Medium"
+description = "Medium priority PR/issues"
+
+["Status : Awaiting-Response"]
+color = "00b1ed"
+name = "Status : Awaiting-Response"
+description = ""
+
+["Status: Abandoned"]
+color = "89CFF0"
+name = "Status: Abandoned"
+description = "Issue/feature has been abandoned."
+
+["Status: Done"]
+color = "00FF9F"
+name = "Status: Done"
+description = "Completed and closed tasks/pr/issues"
+
+["Status: InProgress"]
+color = "FFD649"
+name = "Status: InProgress"
+description = "PR/Bug-fix WIP"
+
+["Status: Invalid"]
+color = "8A8AE5"
+name = "Status: Invalid"
+description = "Invalid"
+
+["Status: Pending Tests"]
+color = "FFEC1A"
+name = "Status: Pending Tests"
+description = "Tests/more tests are required"
+
+["Status: Resolved"]
+color = "00D100"
+name = "Status: Resolved"
+description = "Issue/PR has been resolved"
+
+["Status: Review Required"]
+color = "C4FF36"
+name = "Status: Review Required"
+description = "Further review required"
+
+["Status: WontFix"]
+color = "AFAFED"
+name = "Status: WontFix"
+description = "Works as intended/beyond scope"
+
+["Type: Bug"]
+color = "e11d21"
+name = "Type: Bug"
+description = "Issue is a bug, Add Type: BugFix for PR"
+
+["Type: Documentation"]
+color = "cc317c"
+name = "Type: Documentation"
+description = "Docs"
+
+["Type: Enhancement"]
+color = "84b6eb"
+name = "Type: Enhancement"
+description = "Improve existing feature"
+
+["Type: Feature"]
+color = "7eed76"
+name = "Type: Feature"
+description = "Feature request/new feature"
+
+["Type: Maintanance"]
+color = "fbca04"
+name = "Type: Maintanance"
+description = "Maintanance taks/package updates/prettify etc"
+
+["Type: Question"]
+color = "d876e3"
+name = "Type: Question"
+description = "Issues with Questions"
+
+["Type: Security"]
+color = "ffede9"
+name = "Type: Security"
+description = "Security fixes"
+
+["Status: Stale"]
+color = "ffffff"
+name = "Status: Stale"

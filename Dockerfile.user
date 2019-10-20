@@ -1,0 +1,29 @@
+FROM python:3.6.9-alpine
+LABEL maintainer="Prasad Tengse<code.tp@outlook.de>"
+# LABEL "com.github.actions.name"="Manage gitHub Issue Labels"
+# LABEL "com.github.actions.description"="Pull/Sync/Manage GitHub Issue labels"
+# LABEL "com.github.actions.icon"="tag"
+# LABEL "com.github.actions.color"="blue"
+
+RUN addgroup -g 1000 user \
+    && adduser -G user -u 1000 -D -h /home/user -s /usr/bin/bash user \
+    && mkdir -p /home/user/app \
+    && chown -R 1000:1000 /home/user/app
+USER user
+
+# ENV stuff
+WORKDIR /home/user/
+ENV PATH "$PATH:/home/user/.local/bin"
+
+# ADD Files
+COPY --chown=1000:1000 . ./labels/
+RUN pip install --user \
+        --upgrade --progress-bar=off -U \
+        --no-cache-dir \
+        ./labels \
+    && rm -rf /home/user/labels \
+    && rm -rf /home/user/.cache \
+    && rm -rf /tmp/*.* /tmp/**/*.* /tmp/**/*
+
+ENTRYPOINT [ "labels" ]
+CMD [ "--help" ]

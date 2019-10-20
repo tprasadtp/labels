@@ -59,6 +59,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
-# VS code
-.vscode/
+Pipfile.lock

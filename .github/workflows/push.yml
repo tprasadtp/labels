@@ -1,0 +1,37 @@
+name: Test and Push Docker Images
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Lint and Test with flake8, mypy and pytest
+      run: make test
+
+    - name: Build Docker Image
+      run: make docker && make action-docker
+
+    - name: Docker Login to Registry(GitHub)
+      run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Docker Login to Registry(DockerHub)
+      run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      env:
+        DOCKER_USERNAME: tprasadtp
+        DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Push Docker Images
+      run: make docker-push && make action-docker-push

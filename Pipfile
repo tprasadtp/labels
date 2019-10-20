@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+flake8 = "*"
+pytest = "*"
+pipenv-to-requirements = "*"
+mypy = "*"
+responses = "==0.10.6"
+
+[packages]
+attrs = "*"
+click = "==7.0"
+pytoml = "==0.1.21"
+requests = "==2.22.0"
+# [requires]
+# python_version = "3.6"

@@ -26,9 +26,9 @@ setuptools.setup(
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     include_package_data=True,
-    zip_safe=False,
+    zip_safe=True,
     python_requires=">=3.6",
-    install_requires=["click", "requests", "pytoml", "attrs"],
+    install_requires=['attrs', 'click==7.0', 'pytoml==0.1.21', 'requests==2.22.0'],
     entry_points={"console_scripts": ["labels = labels.cli:labels"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
