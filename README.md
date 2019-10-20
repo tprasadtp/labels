@@ -30,8 +30,10 @@ You can install this as Github Actions.
 ```yaml
 on:
   push:
+    branches:
+      - master
     paths:
-    - '.github/labels.toml'
+    - '.github/**'
 name: labels
 jobs:
   labels:
@@ -40,7 +42,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: sync labels
-      uses: tprasadtp/labels@master
+      uses: tprasadtp/labels@dev
       with:
         owner: "OWNERNAME"
         repo: "REPONAME"
