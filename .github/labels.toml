@@ -8,6 +8,11 @@ color = "C8A2C8"
 name = "Meta: Automation"
 description = "Automation"
 
+["Actor: Dependabot"]
+color = "C8A2C8"
+name = "Actor: Dependabot"
+description = "Acted by Dependabot"
+
 ["Meta: Duplicate"]
 color = "C8A2C8"
 name = "Meta: Duplicate"
@@ -102,6 +107,21 @@ description = "Feature request/new feature"
 color = "fbca04"
 name = "Type: Maintanance"
 description = "Maintanance taks/package updates/prettify etc"
+
+["Type: Dependencies"]
+color = "fbca04"
+name = "Type: Dependencies"
+description = "Dependency update"
+
+["Deps: Python"]
+color = "fbca04"
+name = "Deps: Python"
+description = "Python Deps"
+
+["Deps: Docker"]
+color = "fbca04"
+name = "Deps: Docker"
+description = "Docker Deps"
 
 ["Type: Question"]
 color = "d876e3"
