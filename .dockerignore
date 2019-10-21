@@ -18,3 +18,4 @@ actions.yml
 pytest_cache
 .venv
 venv
+dist

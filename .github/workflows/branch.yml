@@ -1,4 +1,4 @@
-name: Test
+name: Build and Test
 on:
   push:
     branches-ignore:
@@ -7,37 +7,24 @@ on:
       - "**"
   pull_request:
 jobs:
-    tox:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                environment:
-                    # Run tests with Python 3.6
-                    - "py36"
-                    # Run tests with Python 3.7
-                    - "py37"
-                    # Run code checks
-                    - "flake8"
-                    # Run static type checker
-                    - "mypy"
-                include:
-                    - environment: "py36"
-                      python: "3.6"
-                    - environment: "py37"
-                      python: "3.7"
-                    - environment: "flake8"
-                      python: "3.7"
-                    - environment: "mypy"
-                      python: "3.7"
-        container:
-            image: python:${{ matrix.python }}
-        steps:
-            - uses: actions/checkout@master
-            - name: Install tox
-              run: |
-                  python -m pip install --upgrade pip
-                  pip install tox poetry
-                  poetry install
-            - name: Run tox
-              run: |
-                  tox -e ${{ matrix.environment }}
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install -v
+    - name: Lint and Test with flake8, mypy and pytest
+      run: poetry run make test
+
+    - name: Build via Poetry
+      run: poetry build
+
+    - name: Build Docker Image
+      run: make docker && make action-docker
