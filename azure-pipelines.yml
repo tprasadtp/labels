@@ -1,0 +1,59 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+  branches:
+    include:
+    - '*' 
+  paths:
+    exclude:
+    - ".github/*"
+    - "*.md"
+    - ".envrc"
+    - ".vscode/*"
+    - ".gitignore"
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - master
+    - dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+strategy:
+  matrix:
+    Python36:
+      python.version: '3.6'
+    Python37:
+      python.version: '3.7'
+    Python38:
+      python.version: '3.8'
+
+
+steps:
+- checkout: self 
+  fetchDepth: 1
+  lfs: false 
+  persistCredentials: false
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install poetry
+  displayName: 'Install dependencies'
+
+- script: poetry run make test
+  displayName: 'Lint with with flake8, mypy and Test with pytest'
+
+- script: poetry build
+  displayName: 'Build Package'
+
+- script: make docker && make action-docker
+  displayName: "Make docker Image"
+
