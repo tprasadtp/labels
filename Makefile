@@ -76,7 +76,7 @@ test: ## Test and Lint
 # Python Stuff
 .PHONY: dist
 dist: ## build dist
-	@python setup.py sdist bdist_wheel
+	@poetry build
 
 .PHONY: help
 help: ## This help dialog.

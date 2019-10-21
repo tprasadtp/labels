@@ -3,17 +3,11 @@
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
+name: Azure Pipeline Linux
 trigger:
   branches:
     include:
-    - '*' 
-  paths:
-    exclude:
-    - ".github/*"
-    - "*.md"
-    - ".envrc"
-    - ".vscode/*"
-    - ".gitignore"
+    - '*'
 pr:
   autoCancel: true
   branches:
@@ -32,11 +26,10 @@ strategy:
     Python38:
       python.version: '3.8'
 
-
 steps:
-- checkout: self 
+- checkout: self
   fetchDepth: 1
-  lfs: false 
+  lfs: false
   persistCredentials: false
 - task: UsePythonVersion@0
   inputs:
@@ -46,6 +39,7 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install poetry
+    poetry install -v
   displayName: 'Install dependencies'
 
 - script: poetry run make test
@@ -56,4 +50,3 @@ steps:
 
 - script: make docker && make action-docker
   displayName: "Make docker Image"
-
