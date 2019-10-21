@@ -2,6 +2,11 @@
 
 Python 3 (3.6 and above) CLI app to manage GitHub issue labels 📝
 
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://dependabot.com)
+![GitHub](https://img.shields.io/github/license/tprasadtp/labels)
+![GitHub repo size](https://img.shields.io/github/repo-size/tprasadtp/labels)
+[![Board Status](https://tprasadtp.visualstudio.com/1ecbd506-0904-40f7-89ec-c836ffc39bd5/0d6794e7-3ad1-4b14-b952-794fbc50b323/_apis/work/boardbadge/b74c9017-96a1-47d9-89dc-c77255c7ab38?columnOptions=1)](https://tprasadtp.visualstudio.com/1ecbd506-0904-40f7-89ec-c836ffc39bd5/_boards/board/t/0d6794e7-3ad1-4b14-b952-794fbc50b323/Microsoft.RequirementCategory/)
+
 ## Installation
 
 **labels** is available for download from [PyPI][PyPI] via [pip][pip]:

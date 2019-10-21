@@ -4,7 +4,7 @@ update_configs:
     directory: "/"
     update_schedule: "weekly"
     target_branch: "dev"
-    default_assignees:
+    default_reviewers:
       - "tprasadtp"
     default_labels:
       - "Meta: Automation"
@@ -23,7 +23,7 @@ update_configs:
     directory: "/"
     update_schedule: "weekly"
     target_branch: "dev"
-    default_assignees:
+    default_reviewers:
       - "tprasadtp"
     default_labels:
       - "Meta: Automation"
@@ -36,3 +36,6 @@ update_configs:
     commit_message:
       prefix: "deps"
       include_scope: true
+    allowed_updates:
+      - match:
+          update_type: "security"

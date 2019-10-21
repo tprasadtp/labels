@@ -17,7 +17,7 @@ matrix:
         env: TOXENV=mypy
 
 install:
-  - pip install tox-pipenv
+  - pip install tox poetry
 
 script:
   - tox
