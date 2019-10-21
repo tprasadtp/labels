@@ -74,13 +74,6 @@ test: ## Test and Lint
 
 
 # Python Stuff
-.PHONY: requirements
-requirements: ## Generate requirements{dev}.txt and update setup.py
-	@echo "+$@"
-	@pipenv_to_requirements
-	@python3 sync-setup.py
-	@python3 sync-setup.py --flit
-
 .PHONY: dist
 dist: ## build dist
 	@python setup.py sdist bdist_wheel
