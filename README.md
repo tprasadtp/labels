@@ -2,7 +2,16 @@
 
 Python 3 (3.6 and above) CLI app to manage GitHub issue labels 📝
 
-## CI
+[![PyPI](https://img.shields.io/pypi/v/labels?color=brightgreen&logo=python&logoColor=white)](https://pypi.org/project/labels/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/labels?logo=python&logoColor=white)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/labels?logo=python&logoColor=white)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/labels?logo=python&logoColor=white)
+![PyPI - Status](https://img.shields.io/pypi/status/labels?logo=python&logoColor=white)
+
+[![Upstream issues](https://img.shields.io/github/issues/hackebrot/labels?label=upstream%20issues&logo=github)](https://github.com/hackebrot/labels/issues)
+![GitHub repo size](https://img.shields.io/github/repo-size/tprasadtp/labels?logo=github&logoColor=white)
+![GitHub top language](https://img.shields.io/github/languages/top/tprasadtp/labels?logo=github&logoColor=white)
+![License](https://img.shields.io/github/license/tprasadtp/labels)
 
 | Service | Status |
 | --- | --- |
@@ -10,20 +19,9 @@ Python 3 (3.6 and above) CLI app to manage GitHub issue labels 📝
 | AZP Python 3.6 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=dev&jobName=Job&configuration=Job%20Python36)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=dev)
 | AZP Python 3.7 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=dev&jobName=Job&configuration=Job%20Python37)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=dev)
 | Action Test and Publish | [![DefaultBranch](https://github.com/tprasadtp/labels/workflows/Test%20and%20Publish/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Test+and+Publish)
-| Action Labels | [![Labels](https://github.com/tprasadtp/labels/workflows/Sync%20Labels/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Sync+Lables)
+| Action Labels | [![Labels](https://github.com/tprasadtp/labels/workflows/Labels%20Sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Labels+Sync)
 | Dependency Management | [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
 | Azure Boards | [![Board Status](https://tprasadtp.visualstudio.com/1ecbd506-0904-40f7-89ec-c836ffc39bd5/0d6794e7-3ad1-4b14-b952-794fbc50b323/_apis/work/boardbadge/b74c9017-96a1-47d9-89dc-c77255c7ab38?columnOptions=1)](https://tprasadtp.visualstudio.com/1ecbd506-0904-40f7-89ec-c836ffc39bd5/_boards/board/t/0d6794e7-3ad1-4b14-b952-794fbc50b323/Microsoft.RequirementCategory/)
-
-[![PyPI](https://img.shields.io/pypi/v/labels?color=brightgreen&logo=python&logoColor=white)](https://pypi.org/project/labels/)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/labels?logo=python&logoColor=white)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/labels?logo=python&logoColor=white)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/labels?logo=python&logoColor=white)
-![PyPI - Status](https://img.shields.io/pypi/status/labels?logo=python&logoColor=white)
-
-[![GitHub issues](https://img.shields.io/github/issues/hackebrot/labels?label=upstream%20issues&logo=github)](https://github.com/hackebrot/labels/issues)
-![GitHub repo size](https://img.shields.io/github/repo-size/tprasadtp/labels?logo=github&logoColor=white)
-![GitHub top language](https://img.shields.io/github/languages/top/tprasadtp/labels?logo=github&logoColor=white)
-![License](https://img.shields.io/github/license/tprasadtp/labels)
 
 ## Installation
 
