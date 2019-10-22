@@ -7,14 +7,15 @@ export PYTHONPATH :=$(CURDIR)/src
 DOCKER_USER := tprasadtp
 .PHONY: docker
 docker: ## Create docker image from the Dockerfile.
-	@DOCKER_BUILDKIT=0 docker build --rm --force-rm -t $(DOCKER_USER)/$(NAME) -f Dockerfile.user .
-	@docker tag $(DOCKER_USER)/$(NAME) docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):latest
+	@DOCKER_BUILDKIT=0 docker build --rm --force-rm -t $(NAME) -f Dockerfile.user .
 	@if ! [ -z $(VERSION) ]; then \
 		echo -e "\e[92mCommit is Tagggd with :: $(VERSION)\e[39m"; \
-		docker tag docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
-		docker tag $(DOCKER_USER)/$(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
+		docker tag $(NAME) docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
+		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
 	else \
-	echo -e "\e[92mNot a tagged commit, skip version tags.\e[39m"; \
+		echo -e "\e[92mNot a tagged commit, skipping version tags.\e[39m"; \
+		docker tag $(NAME) docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):latest; \
+		docker tag $(NAME) $(DOCKER_USER):latest; \
 	fi
 
 # User github docker image by default
@@ -33,34 +34,34 @@ run-fetch: ## Fetch labels(docker) Eg. `make run-fetch REPO=repo OWNER=ghusernam
 .PHONY: docker-push
 docker-push: ## Push docker image to GitHub and DockerHub.
 	@echo "+ $@"
-	@docker push $(DOCKER_USER)/$(NAME):latest
-	@docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):latest
 	@if ! [ -z $(VERSION) ]; then \
 		echo -e "\e[92mCommit is Tagggd with :: $(VERSION)\e[39m"; \
 		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):$(VERSION); \
 		docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
 	else \
-		echo -e "\e[92mNot a tagged commit, skip version tags.\e[39m"; \
+		echo -e "\e[92mNot a tagged commit, tag latest.\e[39m"; \
+		docker push $(DOCKER_USER)/$(NAME):latest; \
+		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):latest; \
 	fi
 
 .PHONY: action-docker
 action-docker: ## Create GitHub action docker image.
-	@DOCKER_BUILDKIT=0 docker build --rm --force-rm -t $(DOCKER_USER)/$(NAME)-action -f Dockerfile .
-	@docker tag $(DOCKER_USER)/$(NAME)-action docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:latest
+	@DOCKER_BUILDKIT=0 docker build --rm --force-rm -t $(NAME)-action -f Dockerfile .
 	@if ! [ -z $(VERSION) ]; then \
-		docker tag $(DOCKER_USER)/$(NAME)-action docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
+		docker tag $(NAME)-action docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
 	else \
-		echo -e "\e[92mNot a tagged commit, skip version tags.\e[39m"; \
+		echo -e "\e[92mNot a tagged commit, tag latest.\e[39m"; \
+		docker tag $(NAME)-action docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:latest; \
 	fi
 
 .PHONY: action-docker-push
 action-docker-push: ## Push action docker image to GitHub
 	@echo "+ $@"
-	@docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:latest
 	@if ! [ -z $(VERSION) ]; then \
-	@docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
+		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
 	else \
-		echo -e "\e[92mNot a tagged commit, skip version tags.\e[39m"; \
+		echo -e "\e[92mNot a tagged commit, push latest tag.\e[39m"; \
+		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:latest; \
 	fi
 
 .PHONY: test
@@ -76,7 +77,7 @@ test: ## Test and Lint
 # Python Stuff
 .PHONY: dist
 dist: ## build dist
-	@python setup.py sdist bdist_wheel
+	@poetry build
 
 .PHONY: help
 help: ## This help dialog.

@@ -1,8 +1,15 @@
-name: Build, Test and Push Docker Images
+name: Test and Publish
 on:
   push:
     branches:
       - dev
+    paths-ignore:
+      - ".gitignore"
+      - ".envrc"
+      - "azure-pipelines.yml"
+      - "**.md"
+      - ".vscode/**"
+      - ".dependabot/**"
 jobs:
   build:
     runs-on: ubuntu-latest
