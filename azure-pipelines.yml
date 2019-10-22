@@ -3,7 +3,7 @@
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
-name: Azure Pipeline Linux
+name: $(SourceBranchName)-$(Date:yyyyMMdd)Build-$(BuildID)
 trigger:
   branches:
     include:
@@ -31,6 +31,7 @@ steps:
   fetchDepth: 1
   lfs: false
   persistCredentials: false
+
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(python.version)'

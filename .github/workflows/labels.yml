@@ -5,7 +5,7 @@ on:
       - dev
     paths:
     - '.github/**'
-name: labels
+name: Labels Sync
 jobs:
   labels:
     name: Sync Labels
