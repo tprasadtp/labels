@@ -1,9 +1,5 @@
 FROM python:3.7.5-alpine3.10
-LABEL maintainer="Prasad Tengse<code.tp@outlook.de>"
-LABEL "com.github.actions.description"="Sync/Manage GitHub issue labels defined in .github/labels.toml"
-LABEL "com.github.actions.name"="Issue Labels"
-LABEL "com.github.actions.icon"="tag"
-LABEL "com.github.actions.color"="blue"
+LABEL "maintainer"="Prasad Tengse<code.tp@outlook.de>"
 
 # ADD Files
 COPY . ./labels/
