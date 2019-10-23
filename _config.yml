@@ -1,1 +1,5 @@
-theme: jekyll-theme-slate
+title: Labels
+description: Sync/Manage GitHub issue labels via actions
+show_downloads: false
+google_analytics:
+theme: jekyll-theme-hacker
