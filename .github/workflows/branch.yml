@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - dev
+      - master
     tags-ignore:
       - "**"
   pull_request:

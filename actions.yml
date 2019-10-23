@@ -1,6 +1,6 @@
 name: "Manage Issue Labels"
 author: "Prasad"
-description: "Sync/Manage GitHub issue labels defined in .github/labels.toml"
+description: "Sync/Manage issue labels defined in .github/labels.toml"
 branding:
   icon: "tag"
   color: "blue"

@@ -16,8 +16,7 @@ Dockerfile.*
 .dockerignore
 # Python cache
 __pycache__
-Pipfile
-Pipfile.lock
+*.pyc
 # Makefile
 Makefile
 # Automation /Dependency
@@ -26,6 +25,7 @@ actions.yml
 # Virtual Envs
 .venv
 venv
+virtualenv
 # Build Artifacts
 dist
 # Custom scripts for project

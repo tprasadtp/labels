@@ -15,7 +15,6 @@ update_configs:
       - match:
           update_type: "semver:patch"
     commit_message:
-      prefix: "deps"
       include_scope: true
     version_requirement_updates: "auto"
   # Keep Dockerfile up to date, batching pull requests weekly
@@ -34,7 +33,6 @@ update_configs:
       - match:
           update_type: "semver:patch"
     commit_message:
-      prefix: "deps"
       include_scope: true
     allowed_updates:
       - match:

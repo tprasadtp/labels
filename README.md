@@ -8,9 +8,9 @@ Python 3 (3.6 and newer) CLI app to manage GitHub issue labels 📝
 
 | Service | Status |
 | --- | --- |
-| Azure Pipelines | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=dev)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=dev)
-| AZP Python 3.6 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=dev&jobName=Job&configuration=Job%20Python36)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=dev)
-| AZP Python 3.7 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=dev&jobName=Job&configuration=Job%20Python37)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=dev)
+| Azure Pipelines | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
+| AZP Python 3.6 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master&jobName=Job&configuration=Job%20Python36)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
+| AZP Python 3.7 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master&jobName=Job&configuration=Job%20Python37)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
 | Action Test and Publish | [![DefaultBranch](https://github.com/tprasadtp/labels/workflows/Test%20and%20Publish/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Test+and+Publish)
 | Action Labels | [![Labels](https://github.com/tprasadtp/labels/workflows/Labels%20Sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Labels+Sync)
 | Dependency Management | [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
@@ -71,7 +71,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: sync labels
-      uses: tprasadtp/labels@dev
+      uses: tprasadtp/labels@master
       with:
         owner: "OWNERNAME"
         repo: "REPONAME"
