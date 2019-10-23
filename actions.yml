@@ -1,18 +1,18 @@
-name: "Manage Github Issue Labels"
+name: "Manage Issue Labels"
 author: "Prasad"
-description: "Action to Manage Github issue label as code. This action sync issue labels defined in .github/labels.toml to GitHub"
+description: "Sync/Manage GitHub issue labels defined in .github/labels.toml"
 branding:
   icon: "tag"
   color: "blue"
 inputs:
   owner:
-    description: "Repositry Owner's User/Org Name"
+    description: "Repositry owner's user/org name"
     required: true
   repo:
-    description: "Repo Name (Without owner/org name)"
+    description: "Name of the repository (Without owner/org name)"
     required: true
   token:
-    description: "Github Token via secrets"
+    description: "Github token via secrets"
     required: true
 runs:
   using: "docker"

@@ -1,21 +1,35 @@
-tests
+# Git and GitHub
 .github
 .gitignore
 .git
+# CI/CD
 .travis.yml
-tox.ini
-Dockerfile
-Dockerfile.*
-.dockerignore
-__pycache__
-Pipfile
-Pipfile.lock
-Makefile
-.dependabot
-actions.yml
+# Testing
 .tox
 .mypy_cache
 pytest_cache
+tests
+tox.ini
+# Docker configs
+Dockerfile
+Dockerfile.*
+.dockerignore
+# Python cache
+__pycache__
+Pipfile
+Pipfile.lock
+# Makefile
+Makefile
+# Automation /Dependency
+.dependabot
+actions.yml
+# Virtual Envs
 .venv
 venv
+# Build Artifacts
 dist
+# Custom scripts for project
+scripts
+# env configs
+.envrc
+.env

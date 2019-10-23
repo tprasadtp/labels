@@ -2,7 +2,7 @@
 [tool.poetry]
 name = "labels"
 version = "0.1.0"
-description = "Python 3.6 CLI app to manage GitHub issue labels"
+description = "Python (3.6 and newer) CLI app to manage GitHub issue labels"
 license = "MIT"
 authors = ["Raphael Pierzina <raphael@hackebrot.de>"]
 readme = "README.md"
