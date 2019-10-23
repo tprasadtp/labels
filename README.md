@@ -1,6 +1,6 @@
 # labels
 
-Python 3 (3.6 and above) CLI app to manage GitHub issue labels 📝
+Python 3 (3.6 and newer) CLI app to manage GitHub issue labels 📝
 
 [![PyPI](https://img.shields.io/pypi/v/labels?color=brightgreen&logo=python&logoColor=white)](https://pypi.org/project/labels/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/labels?logo=python&logoColor=white)
