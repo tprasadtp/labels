@@ -30,19 +30,30 @@ run-fetch: ## Fetch labels(docker) Eg. `make run-fetch REPO=repo OWNER=ghusernam
 		docker.pkg.github.com/tprasadtp/labels/labels:latest \
 		fetch -r $(REPO) -o $(OWNER)
 
-
-.PHONY: docker-push
-docker-push: ## Push docker image to GitHub and DockerHub.
+.PHONY: docker-push-hub
+docker-push-hub: ## Push docker image to DockerHub.
 	@echo "+ $@"
 	@if ! [ -z $(VERSION) ]; then \
 		echo -e "\e[92mCommit is Tagggd with :: $(VERSION)\e[39m"; \
-		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):$(VERSION); \
 		docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
 	else \
 		echo -e "\e[92mNot a tagged commit, tag latest.\e[39m"; \
 		docker push $(DOCKER_USER)/$(NAME):latest; \
+	fi
+
+.PHONY: docker-push-github
+docker-push-github: ## Push docker image to GitHub.
+	@echo "+ $@"
+	@if ! [ -z $(VERSION) ]; then \
+		echo -e "\e[92mCommit is Tagggd with :: $(VERSION)\e[39m"; \
+		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):$(VERSION); \
+	else \
+		echo -e "\e[92mNot a tagged commit, tag latest.\e[39m"; \
 		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):latest; \
 	fi
+
+.PHONY: docker-push
+docker-push: docker-push-github docker-push-hub ## Push dockr images to GitHub and DockerHub
 
 .PHONY: action-docker
 action-docker: ## Create GitHub action docker image.

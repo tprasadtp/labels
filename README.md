@@ -14,7 +14,6 @@ Python 3 (3.6 and newer) CLI app to manage GitHub issue labels 📝
 | Action Test and Publish | [![DefaultBranch](https://github.com/tprasadtp/labels/workflows/Test%20and%20Publish/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Test+and+Publish)
 | Action Labels | [![Labels](https://github.com/tprasadtp/labels/workflows/Labels%20Sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Labels+Sync)
 | Dependency Management | [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
-| Azure Boards | [![Board Status](https://tprasadtp.visualstudio.com/1ecbd506-0904-40f7-89ec-c836ffc39bd5/0d6794e7-3ad1-4b14-b952-794fbc50b323/_apis/work/boardbadge/b74c9017-96a1-47d9-89dc-c77255c7ab38?columnOptions=1)](https://tprasadtp.visualstudio.com/1ecbd506-0904-40f7-89ec-c836ffc39bd5/_boards/board/t/0d6794e7-3ad1-4b14-b952-794fbc50b323/Microsoft.RequirementCategory/)
 
 ## PyPI (managed by upstream)
 
@@ -240,3 +239,5 @@ source software.
 [toml]: https://github.com/toml-lang/toml
 [PyPI]: https://pypi.org/
 [pip]: https://pypi.org/project/pip/
+
+![Analytics](https://ga-beacon.prasadt.com/UA-101760811-3/github/labels?flat&useReferer)

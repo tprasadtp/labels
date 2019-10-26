@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "Dockerfile.*": "dockerfile",
-        "poetry.*": "toml"
+        "poetry.*": "toml",
+        ".envrc": "shellscript"
     },
     "python.linting.pycodestyleEnabled": false,
     "python.linting.pylintEnabled": false,
