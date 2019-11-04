@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: sync labels
-      uses: tprasadtp/labels@dev
+      uses: tprasadtp/labels@master
       with:
         owner: "tprasadtp"
         repo: "labels"

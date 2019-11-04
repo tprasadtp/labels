@@ -1,9 +1,6 @@
 name: Test and Publish
 on:
   push:
-    branches:
-      - master
-      - dev
     paths-ignore:
       - ".gitignore"
       - ".envrc"
@@ -12,6 +9,7 @@ on:
       - ".vscode/**"
       - ".dependabot/**"
       - "_config.yml"
+  pull_request:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,18 +32,3 @@ jobs:
 
     - name: Build Docker Image
       run: make docker && make action-docker
-
-    - name: Docker Login to Registry(GitHub)
-      run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Docker Login to Registry(DockerHub)
-      run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      env:
-        DOCKER_USERNAME: tprasadtp
-        DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-    - name: Push Docker Images
-      run: make docker-push && make action-docker-push
