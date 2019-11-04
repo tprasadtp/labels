@@ -7,13 +7,11 @@ update_configs:
     default_reviewers:
       - "tprasadtp"
     default_labels:
-      - "Meta: Automation"
       - "Actor: Dependabot"
-      - "Type: Dependencies"
       - "Deps: Python"
-    automerged_updates:
-      - match:
-          update_type: "semver:patch"
+    # automerged_updates:
+    #   - match:
+    #       update_type: "semver:patch"
     commit_message:
       prefix: "chore"
       include_scope: true
@@ -26,13 +24,11 @@ update_configs:
     default_reviewers:
       - "tprasadtp"
     default_labels:
-      - "Meta: Automation"
       - "Actor: Dependabot"
-      - "Type: Dependencies"
       - "Deps: Docker"
-    automerged_updates:
-      - match:
-          update_type: "semver:patch"
+    # automerged_updates:
+    #   - match:
+    #       update_type: "semver:patch"
     commit_message:
       prefix: "chore"
       include_scope: true

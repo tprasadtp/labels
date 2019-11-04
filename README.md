@@ -2,31 +2,18 @@
 
 Python 3 (3.6 and newer) CLI app to manage GitHub issue labels 📝
 
-![GitHub repo size](https://img.shields.io/github/repo-size/tprasadtp/labels?logo=github&logoColor=white)
-![GitHub top language](https://img.shields.io/github/languages/top/tprasadtp/labels?logo=github&logoColor=white)
+[![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
+[![DefaultBranch](https://github.com/tprasadtp/labels/workflows/Test%20and%20Publish/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Test+and+Publish)
+[![Labels](https://github.com/tprasadtp/labels/workflows/Labels%20Sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Labels+Sync)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
 ![License](https://img.shields.io/github/license/tprasadtp/labels)
 
-| Service | Status |
-| --- | --- |
-| Azure Pipelines | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
-| AZP Python 3.6 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master&jobName=Job&configuration=Job%20Python36)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
-| AZP Python 3.7 | [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master&jobName=Job&configuration=Job%20Python37)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
-| Action Test and Publish | [![DefaultBranch](https://github.com/tprasadtp/labels/workflows/Test%20and%20Publish/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Test+and+Publish)
-| Action Labels | [![Labels](https://github.com/tprasadtp/labels/workflows/Labels%20Sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Labels+Sync)
-| Dependency Management | [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
 
 ## PyPI (managed by upstream)
 
 [![PyPI](https://img.shields.io/pypi/v/labels?color=brightgreen&logo=python&logoColor=white)](https://pypi.org/project/labels/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/labels?logo=python&logoColor=white)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/labels?logo=python&logoColor=white)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/labels?logo=python&logoColor=white)
-![PyPI - Status](https://img.shields.io/pypi/status/labels?logo=python&logoColor=white)
-
-## Upstream CI
-
-[![Labels](https://github.com/hackebrot/labels/workflows/Run%20checks/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Labels+Sync)
-[![Upstream issues](https://img.shields.io/github/issues/hackebrot/labels?label=upstream%20issues&logo=github)](https://github.com/hackebrot/labels/issues)
 
 ## Installation
 
@@ -240,4 +227,4 @@ source software.
 [PyPI]: https://pypi.org/
 [pip]: https://pypi.org/project/pip/
 
-![Analytics](https://ga-beacon.prasadt.com/UA-101760811-3/github/labels?flat&useReferer)
+![Analytics](https://ga-beacon.prasadt.com/UA-101760811-3/github/labels?pink&useReferer)
