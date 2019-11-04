@@ -23,12 +23,12 @@ color = "fbca04"
 name = "Priority: Medium"
 description = "Medium priority PR/issues"
 
-["Status : Awaiting-Response"]
+["Status: Awaiting-Response"]
 color = "00b1ed"
-name = "Status : Awaiting-Response"
+name = "Status: Awaiting-Response"
 description = ""
 
-["Status : Keep-Open"]
+["Status: Keep-Open"]
 color = "00b1ed"
 name = "Status : Keep-Open"
 description = ""
@@ -45,7 +45,7 @@ description = "Completed and closed tasks/pr/issues"
 
 ["Status: In-Progress"]
 color = "FFD649"
-name = "Status: InProgress"
+name = "Status: In-Progress"
 description = "PR/Bug-fix WIP"
 
 ["Status: Invalid"]
@@ -138,7 +138,7 @@ color = "ceef86"
 name = "Deps: Rust"
 description = ""
 
-["Submodule"]
+["Deps: Submodule"]
 color = "ceef86"
 name = "Deps: Submodule"
 description = ""
