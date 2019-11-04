@@ -30,7 +30,7 @@ description = ""
 
 ["Status: Keep-Open"]
 color = "00b1ed"
-name = "Status : Keep-Open"
+name = "Status: Keep-Open"
 description = ""
 
 ["Status: Abandoned"]
