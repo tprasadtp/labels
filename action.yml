@@ -1,5 +1,5 @@
 name: "Manage Issue Labels"
-author: "Prasad"
+author: "Prasad Tengse"
 description: "Sync/Manage issue labels defined in .github/labels.toml"
 branding:
   icon: "tag"

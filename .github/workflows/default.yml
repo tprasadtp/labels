@@ -1,4 +1,4 @@
-name: Test and Publish
+name: Test
 on:
   push:
     paths-ignore:

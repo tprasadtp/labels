@@ -3,7 +3,7 @@
 Python 3 (3.6 and newer) CLI app to manage GitHub issue labels 📝
 
 [![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
-[![DefaultBranch](https://github.com/tprasadtp/labels/workflows/Test%20and%20Publish/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Test+and+Publish)
+[![DefaultBranch](https://github.com/tprasadtp/labels/workflows/Test/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Test)
 [![Labels](https://github.com/tprasadtp/labels/workflows/Labels%20Sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=Labels+Sync)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
 ![License](https://img.shields.io/github/license/tprasadtp/labels)
