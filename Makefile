@@ -142,7 +142,6 @@ lint: black-lint isort-lint flake8 mypy docker-lint ## lint everything (black, i
 .PHONY: dist
 dist: ## build dist
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * mypy\033[0m"
 	@poetry build
 
 .PHONY: clean

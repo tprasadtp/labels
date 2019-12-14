@@ -45,3 +45,8 @@ scripts
 .vscode
 *.txt
 scripts
+.editorconfig
+_config.yml
+.hadolint.yaml
+action.yml
+poetry.*
