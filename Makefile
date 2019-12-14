@@ -1,80 +1,91 @@
 # Set the shell
 SHELL := /bin/bash
 NAME := labels
-VERSION := $(shell git tag -l --points-at HEAD)
+ifeq ($(GITHUB_ACTIONS),true)
+	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#\s]+/-/g' )
+else
+	BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+endif
+
+VERSION := $(shell python3 scripts/getversion.py )
+
+
 export PYTHONPATH :=$(CURDIR)/src
 
+# Enable Buidkit if not already set
+DOCKER_BUILDKIT ?= 1
+
 DOCKER_USER := tprasadtp
+
+# Prefix for github package registry images
+DOCKER_PREFIX_GITHUB := docker.pkg.github.com/$(DOCKER_USER)/$(NAME)
+
+
+.PHONY: all
+all: clean lint test dist docker-lint docker ## clean, lint, test, dist and docker
+
+.PHONY: docker-lint
+docker-lint: ## Lint Dockerfiles
+	@echo -e "\033[92m➜ $@ \033[0m"
+	@echo -e "\033[95m * Linting Dockerfile\033[0m"
+	@docker run --rm -v $(CURDIR)/.hadolint.yaml:/.hadolint.yaml:ro -i hadolint/hadolint < Dockerfile
+	@echo -e "\033[95m * Linting Dockerfile.user\033[0m"
+	@docker run --rm -v $(CURDIR)/.hadolint.yaml:/.hadolint.yaml:ro -i hadolint/hadolint < Dockerfile.user
+
+
 .PHONY: docker
-docker: ## Create docker image from the Dockerfile.
-	@DOCKER_BUILDKIT=0 docker build --rm --force-rm -t $(NAME) -f Dockerfile.user .
-	@if ! [ -z $(VERSION) ]; then \
-		echo -e "\e[92mCommit is Tagggd with :: $(VERSION)\e[39m"; \
-		docker tag $(NAME) docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
+docker: ## Build docker images (action and user images)
+	@echo -e "\033[92m➜ $@ \033[0m"
+	@echo -e "\033[95m * Building Action Image\033[0m"
+	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME)-action -f Dockerfile .
+	@if [ $(BRANCH) == "master" ]; then \
+		echo -e "\033[95m * On master add tagging as $(VERSION) \033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:latest; \
+		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
+	else \
+		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
+	fi
+	@echo -e "\033[95m * Building User Image\033[0m"
+	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME) -f Dockerfile.user .
+	@if [ $(BRANCH) == "master" ]; then \
+		echo -e "\033[95m * On master add tagging as $(VERSION) \033[0m"; \
+		docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
 		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
+		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
+		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
 	else \
-		echo -e "\e[92mNot a tagged commit, skipping version tags.\e[39m"; \
-		docker tag $(NAME) docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):latest; \
-		docker tag $(NAME) $(DOCKER_USER):latest; \
-	fi
-
-# User github docker image by default
-.PHONY: run-fetch
-run-fetch: ## Fetch labels(docker) Eg. `make run-fetch REPO=repo OWNER=ghusername`
-	@echo "+ $@"
-	@echo "OWNER : $(OWNER), REPO : $(REPO)"
-	@touch -a .github/labels.toml
-	@docker run -it -e LABELS_USERNAME=${GITHUB_USERNAME} \
-	 	-e LABELS_TOKEN=${GITHUB_TOKEN} \
-		-v $(CURDIR)/.github/labels.toml:/home/user/labels.toml:rw \
-		docker.pkg.github.com/tprasadtp/labels/labels:latest \
-		fetch -r $(REPO) -o $(OWNER)
-
-.PHONY: docker-push-hub
-docker-push-hub: ## Push docker image to DockerHub.
-	@echo "+ $@"
-	@if ! [ -z $(VERSION) ]; then \
-		echo -e "\e[92mCommit is Tagggd with :: $(VERSION)\e[39m"; \
-		docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
-	else \
-		echo -e "\e[92mNot a tagged commit, tag latest.\e[39m"; \
-		docker push $(DOCKER_USER)/$(NAME):latest; \
-	fi
-
-.PHONY: docker-push-github
-docker-push-github: ## Push docker image to GitHub.
-	@echo "+ $@"
-	@if ! [ -z $(VERSION) ]; then \
-		echo -e "\e[92mCommit is Tagggd with :: $(VERSION)\e[39m"; \
-		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):$(VERSION); \
-	else \
-		echo -e "\e[92mNot a tagged commit, tag latest.\e[39m"; \
-		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/$(NAME):latest; \
+		echo -e "\033[95m * Not on master add tagging as $(BRANCH).\033[0m"; \
+		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
+		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
 	fi
 
 .PHONY: docker-push
-docker-push: docker-push-github docker-push-hub ## Push dockr images to GitHub and DockerHub
-
-.PHONY: action-docker
-action-docker: ## Create GitHub action docker image.
-	@DOCKER_BUILDKIT=0 docker build --rm --force-rm -t $(NAME)-action -f Dockerfile .
-	@if ! [ -z $(VERSION) ]; then \
-		docker tag $(NAME)-action docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
+docker-push: ## Push docker images (action and user images)
+	@echo -e "\033[92m➜ $@ \033[0m"
+	@echo -e "\033[95m * Pushing User Image\033[0m"
+	@if [ $(BRANCH) == "master" ]; then \
+		echo -e "\033[93m   + On master add pushing latest and $(VERSION) to DockerHub\033[0m"; \
+		docker push $(DOCKER_USER)/$(NAME):latest; \
+		docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
+		echo -e "\033[93m   + On master add pushing latest and $(VERSION) to GitHub \033[0m"; \
+		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
+		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
 	else \
-		echo -e "\e[92mNot a tagged commit, tag latest.\e[39m"; \
-		docker tag $(NAME)-action docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:latest; \
+		echo -e "\033[93m   + Not on master and pushing $(BRANCH) to DockerHub.\033[0m"; \
+		docker push $(DOCKER_USER)/$(NAME):$(BRANCH); \
+		echo -e "\033[93m   + Not on master and pushing $(BRANCH) to GitHub \033[0m"; \
+		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
 	fi
-
-.PHONY: action-docker-push
-action-docker-push: ## Push action docker image to GitHub
-	@echo "+ $@"
-	@if ! [ -z $(VERSION) ]; then \
-		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:$(VERSION); \
+	@echo -e "\033[95m * Pushing Action Image\033[0m"
+	@if [ $(BRANCH) == "master" ]; then \
+		echo -e "\033[93m   + On master add pushing latest and $(VERSION) \033[0m"; \
+		docker push $(DOCKER_PREFIX_GITHUB)/action:latest; \
+		docker push $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
 	else \
-		echo -e "\e[92mNot a tagged commit, push latest tag.\e[39m"; \
-		docker push docker.pkg.github.com/$(DOCKER_USER)/$(NAME)/action:latest; \
+		echo -e "\033[93m   + Not on master as pushing $(BRANCH).\033[0m"; \
+		docker push $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
 	fi
-
 
 .PHONY: test
 test: ## Test and Lint
@@ -106,12 +117,6 @@ flake8: ## Run flake8
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running flake8...\033[0m"
 	@flake8
-
-.PHONY: safety-check
-safety-check: ## Check Package safety
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Checking Environemnt...\033[0m"
-	@safety check
 
 .PHONY: black
 black: ## Black formatter

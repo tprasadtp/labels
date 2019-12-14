@@ -33,3 +33,15 @@ scripts
 # env configs
 .envrc
 .env
+.pytest_cache
+.coverage
+*.ini
+*.lock
+*.yaml
+.flake8
+*.yml
+.azure
+*.xml
+.vscode
+*.txt
+scripts

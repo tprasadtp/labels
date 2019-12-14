@@ -15,6 +15,4 @@ jobs:
     - name: sync labels
       uses: tprasadtp/labels@master
       with:
-        owner: "tprasadtp"
-        repo: "labels"
         token: ${{ secrets.GITHUB_TOKEN }}

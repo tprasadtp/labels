@@ -6,11 +6,11 @@ branding:
   color: "blue"
 inputs:
   owner:
-    description: "Repositry owner's user/org name"
-    required: true
+    description: "Repository owner's user/org name"
+    required: false
   repo:
     description: "Name of the repository (Without owner/org name)"
-    required: true
+    required: false
   token:
     description: "Github token via secrets"
     required: true

@@ -52,17 +52,24 @@ on:
 name: labels
 jobs:
   labels:
-    name: Sync Labels
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
     - name: sync labels
       uses: tprasadtp/labels@master
       with:
-        owner: "OWNERNAME"
-        repo: "REPONAME"
+        # owner: "OWNERNAME" # Optional
+        # repo: "REPONAME"   # Optional
         token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+> If `owner` and `repo` are not specified, action running in repo will be implied.
+> You can use those parameters to set labels on multiple repos (use matrix explansion for faster builds).
+> However, You must specify custom personal access token with scope `repo` or `public_repo` via secrets
+> as default token will not have tho scope necessary. It is recommended to use a machine token.
+
+
+> If `owner` and `repo` are not specified, action running in repo will be implied.
+> You can use those parameters to set labels on multiple repos (use matrix explansion for faster builds).
+> However, You must specify custom personal access token with scope `repo` or `public_repo` via secrets
+> as default token will not have tho scope necessary. It is recommended to use a machine token.
 
 ## Authentication
 

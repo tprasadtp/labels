@@ -1,4 +1,4 @@
-name: Test
+name: build
 on:
   push:
     paths-ignore:
@@ -11,28 +11,89 @@ on:
       - "_config.yml"
   pull_request:
 jobs:
-  build:
+  # lint everything
+  lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        linter: [fmt-lint, flake8, mypy]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry==0.12.7
+          poetry install -v --no-dev
+          if [[ $LINTER == fmt-* ]]; then
+            pip install black isort[pyproject] pytest responses==0.10.6
+          else
+            pip install "$LINTER"
+          fi
+        env:
+          LINTER: ${{ matrix.linter }}
+      - name: Lint
+        run: poetry run make ${{ matrix.linter }}
+
+  # Test on all platforms
+  test:
+    needs: lint
+    strategy:
+      matrix:
+        # os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [ubuntu-latest]
+        pythonVersion: [3.6, 3.7, 3.8]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.6
+        python-version: ${{ matrix.pythonVersion }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install poetry
         poetry install -v
-
-    - name: fmt
-      run: poetry run make fmt-lint
-
-    - name: Lint and Test with flake8, mypy and pytest
+    - name: Test
       run: poetry run make test
 
-    - name: Build via Poetry
-      run: poetry build
+    - name: Build
+      run: make dist
 
-    - name: Build Docker Image
-      run: make docker && make action-docker
+  # Build docker images
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Lint Dockerfiles
+        run: make docker-lint
+
+      - name: Build Docker
+        run: make docker
+
+      - name: Docker Login to Registry (GitHub)
+        run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+
+      - name: Docker Login to Registry (DockerHub)
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        env:
+          DOCKER_USERNAME: tprasadtp
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+
+      - name: Docker Push
+        run: make docker-push
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+
+      - name: Docker Cleanup
+        run: docker logout && rm -f ${HOME}/.docker/config.json
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
