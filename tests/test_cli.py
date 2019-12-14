@@ -1,5 +1,5 @@
-import typing
 import shlex
+import typing
 
 import pytest
 from click.testing import CliRunner

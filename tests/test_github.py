@@ -1,5 +1,4 @@
 import pytest
-
 from requests.auth import HTTPBasicAuth
 
 from labels.github import Client, Label, Repository

@@ -1,5 +1,5 @@
-import typing
 import logging
+import typing
 
 import attr
 import requests

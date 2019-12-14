@@ -3,7 +3,7 @@ import typing
 import pytoml
 
 from labels.github import Label
-from labels.io import write_labels, read_labels
+from labels.io import read_labels, write_labels
 
 
 def test_write_labels(
