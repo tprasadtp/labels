@@ -66,11 +66,6 @@ jobs:
 > as default token will not have tho scope necessary. It is recommended to use a machine token.
 
 
-> If `owner` and `repo` are not specified, action running in repo will be implied.
-> You can use those parameters to set labels on multiple repos (use matrix explansion for faster builds).
-> However, You must specify custom personal access token with scope `repo` or `public_repo` via secrets
-> as default token will not have tho scope necessary. It is recommended to use a machine token.
-
 ## Authentication
 
 The labels CLI connects to the GitHub API to modify labels for a GitHub

@@ -73,6 +73,14 @@ jobs:
       - name: Lint Dockerfiles
         run: make docker-lint
 
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install Pytoml
+        run: pip install pytoml
+
       - name: Build Docker
         run: make docker
 
