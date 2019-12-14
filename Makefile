@@ -2,7 +2,7 @@
 SHELL := /bin/bash
 NAME := labels
 ifeq ($(GITHUB_ACTIONS),true)
-	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#\s]+/-/g' )
+	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#]+/-/g' )
 else
 	BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 endif
