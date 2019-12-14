@@ -24,6 +24,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install -v
+
+    - name: fmt
+      run: poetry run make fmt-lint
+
     - name: Lint and Test with flake8, mypy and pytest
       run: poetry run make test
 
