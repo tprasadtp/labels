@@ -81,7 +81,7 @@ test: ## Test and Lint
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * pytest\033[0m"
 	# @pytest --cov=src/labels -v --cov-report=xml
-	@pytest
+	@pytest -v
 
 .PHONY: isort
 isort: ## Run isort on all files
