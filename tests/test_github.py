@@ -1,13 +1,12 @@
 import pytest
-from requests.auth import HTTPBasicAuth
 
 from labels.github import Client, Label, Repository
 
 
 @pytest.fixture(name="client")
-def fixture_client(base_url: str, username: str, token: str) -> Client:
+def fixture_client(base_url: str, token: str) -> Client:
     """Return a GitHub API client."""
-    return Client(HTTPBasicAuth(username, token), base_url=base_url)
+    return Client(token, base_url=base_url)
 
 
 @pytest.fixture(name="repo")

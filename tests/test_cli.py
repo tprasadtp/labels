@@ -8,12 +8,6 @@ from labels import __version__
 from labels.cli import labels
 
 
-@pytest.fixture(name="set_username", autouse=True)
-def fixture_set_username(monkeypatch: typing.Any, username: str) -> None:
-    """Set the username environment variable."""
-    monkeypatch.setenv("LABELS_USERNAME", username)
-
-
 @pytest.fixture(name="set_token", autouse=True)
 def fixture_set_token(monkeypatch: typing.Any, token: str) -> None:
     """Set the token environment variable."""

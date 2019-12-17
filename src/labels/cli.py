@@ -5,7 +5,6 @@ import typing
 
 import attr
 import click
-from requests.auth import HTTPBasicAuth
 
 from labels import __version__, utils
 from labels.exceptions import LabelsException
@@ -29,14 +28,6 @@ class LabelsContext:
 @click.version_option(__version__, "-V", "--version", prog_name="labels")
 @click.option("-v", "--verbose", help="Print debug information", is_flag=True)
 @click.option(
-    "-u",
-    "--username",
-    help="GitHub username",
-    type=str,
-    required=True,
-    envvar="LABELS_USERNAME",
-)
-@click.option(
     "-t",
     "--token",
     help="GitHub access token",
@@ -44,17 +35,16 @@ class LabelsContext:
     required=True,
     envvar="LABELS_TOKEN",
 )
-def labels(ctx, username: str, token: str, verbose: bool) -> None:
+def labels(ctx, token: str, verbose: bool) -> None:
     """labels - CLI to manage GitHub issue labels."""
 
     logger = create_logger()
     if verbose:
         logger.setLevel(logging.DEBUG)
-        logger.debug("Logger initialized")
     else:
         logger.setLevel(logging.INFO)
 
-    ctx.obj = LabelsContext(Client(HTTPBasicAuth(username, token)))
+    ctx.obj = LabelsContext(Client(token))
 
 
 @click.pass_obj

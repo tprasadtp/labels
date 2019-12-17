@@ -18,4 +18,4 @@ else
 fi
 
 echo "Running Labels Sync"
-labels -v -u "${INPUT_OWNER}" -t "${INPUT_TOKEN}" sync -r "${INPUT_REPO}" -o "${INPUT_OWNER}" -f "${GITHUB_WORKSPACE}/${INPUT_FILE}"
+labels -v -t "${INPUT_TOKEN}" sync -r "${INPUT_REPO}" -o "${INPUT_OWNER}" -f "${GITHUB_WORKSPACE}/${INPUT_FILE}"

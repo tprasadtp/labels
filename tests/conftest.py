@@ -10,12 +10,6 @@ ResponseLabel = typing.Dict[str, typing.Any]
 ResponseLabels = typing.List[ResponseLabel]
 
 
-@pytest.fixture(name="username", scope="session")
-def fixture_username() -> str:
-    """Return a username for GitHub API authentication."""
-    return "hackebrot"
-
-
 @pytest.fixture(name="token", scope="session")
 def fixture_token() -> str:
     """Return a token for GitHub API authentication."""

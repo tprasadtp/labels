@@ -49,12 +49,10 @@ class Client:
     base_url: str
     session: requests.Session
 
-    def __init__(
-        self, auth: requests.auth.AuthBase, base_url: str = "https://api.github.com"
-    ) -> None:
+    def __init__(self, token: str, base_url: str = "https://api.github.com") -> None:
         self.base_url = base_url
         self.session = requests.Session()
-        self.session.auth = auth
+        self.headers = {"Authorization": f"token {token}"}
 
     def list_labels(self, repo: Repository) -> typing.List[Label]:
         """Return the list of Labels from the repository.
@@ -67,7 +65,7 @@ class Client:
 
         response = self.session.get(
             f"{self.base_url}/repos/{repo.owner}/{repo.name}/labels",
-            headers={"Accept": "application/vnd.github.symmetra-preview+json"},
+            headers=self.headers,
         )
 
         if response.status_code != 200:
@@ -90,7 +88,7 @@ class Client:
 
         response = self.session.get(
             f"{self.base_url}/repos/{repo.owner}/{repo.name}/labels/{name}",
-            headers={"Accept": "application/vnd.github.symmetra-preview+json"},
+            headers=self.headers,
         )
 
         if response.status_code != 200:
@@ -113,7 +111,7 @@ class Client:
 
         response = self.session.post(
             f"{self.base_url}/repos/{repo.owner}/{repo.name}/labels",
-            headers={"Accept": "application/vnd.github.symmetra-preview+json"},
+            headers=self.headers,
             json=label.params_dict,
         )
 
@@ -137,7 +135,7 @@ class Client:
 
         response = self.session.patch(
             f"{self.base_url}/repos/{repo.owner}/{repo.name}/labels/{name}",
-            headers={"Accept": "application/vnd.github.symmetra-preview+json"},
+            headers=self.headers,
             json=label.params_dict,
         )
 
@@ -160,7 +158,8 @@ class Client:
         logger.debug(f"Deleting label '{name}' for {repo.owner}/{repo.name}")
 
         response = self.session.delete(
-            f"{self.base_url}/repos/{repo.owner}/{repo.name}/labels/{name}"
+            f"{self.base_url}/repos/{repo.owner}/{repo.name}/labels/{name}",
+            headers=self.headers,
         )
 
         if response.status_code != 204:

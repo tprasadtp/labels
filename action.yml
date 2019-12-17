@@ -11,6 +11,9 @@ inputs:
   repo:
     description: "Name of the repository (Without owner/org name)"
     required: false
+  file:
+    description: "labels file"
+    required: false
   token:
     description: "Github token via secrets"
     required: true

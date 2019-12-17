@@ -1,15 +1,15 @@
 FROM python:3.7.5-alpine3.10
-LABEL maintainer="Prasad Tengse<tprasadtp@noreply.user.github.com>"
+LABEL maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com>"
 
-RUN addgroup -g 1000 user \
-    && adduser -G user -u 1000 -D -h /home/user -s /usr/bin/bash user \
-    && mkdir -p /home/user/app \
-    && chown -R 1000:1000 /home/user/app
-USER user
+RUN addgroup -g 1000 labels \
+    && adduser -G labels -u 1000 -D -h /home/labels labels \
+    && mkdir -p /home/labels/app \
+    && chown -R 1000:1000 /home/labels/app
+USER labels
 
 # ENV stuff
-WORKDIR /home/user/
-ENV PATH "$PATH:/home/user/.local/bin"
+WORKDIR /home/labels/
+ENV PATH "$PATH:/home/labels/.local/bin"
 
 # ADD Files
 COPY --chown=1000:1000 . ./labels/
@@ -17,8 +17,8 @@ RUN pip install --user \
         --upgrade --progress-bar=off -U \
         --no-cache-dir \
         ./labels \
-    && rm -rf /home/user/labels \
-    && rm -rf /home/user/.cache \
+    && rm -rf /home/labels/labels \
+    && rm -rf /home/labels/.cache \
     && rm -rf /tmp/*.* /tmp/**/*.* /tmp/**/*
 
 ENTRYPOINT [ "labels", "-v" ]

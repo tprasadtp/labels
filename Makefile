@@ -12,8 +12,8 @@ VERSION := $(shell python3 scripts/getversion.py )
 
 export PYTHONPATH :=$(CURDIR)/src
 
-# Enable Buidkit if not already set
-DOCKER_BUILDKIT ?= 1
+# Disable Buidkit
+DOCKER_BUILDKIT := 0
 
 DOCKER_USER := tprasadtp
 
@@ -33,20 +33,13 @@ docker-lint: ## Lint Dockerfiles
 	@docker run --rm -v $(CURDIR)/.hadolint.yaml:/.hadolint.yaml:ro -i hadolint/hadolint < Dockerfile.user
 
 
+.PHONY: docker-all
+docker-all: docker docker-action ## Build all docker images (Github Action and DockerHub image)
+
 .PHONY: docker
-docker: ## Build docker images (action and user images)
+docker: ## Build DockerHub image (runs as root inide docker)
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Building Action Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME)-action -f Dockerfile .
-	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[95m * On master add tagging as $(VERSION) \033[0m"; \
-		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:latest; \
-		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
-	else \
-		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
-		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
-	fi
-	@echo -e "\033[95m * Building User Image\033[0m"
+	@echo -e "\033[95m * Building DockerHub Image\033[0m"
 	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME) -f Dockerfile.user .
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master add tagging as $(VERSION) \033[0m"; \
@@ -59,6 +52,21 @@ docker: ## Build docker images (action and user images)
 		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
 	fi
+
+.PHONY: docker-action
+docker-action: ## Build docker action image
+	@echo -e "\033[92m➜ $@ \033[0m"
+	@echo -e "\033[95m * Building Action Image\033[0m"
+	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME)-action -f Dockerfile .
+	@if [ $(BRANCH) == "master" ]; then \
+		echo -e "\033[95m * On master add tagging as $(VERSION) \033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:latest; \
+		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
+	else \
+		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
+	fi
+
 
 .PHONY: docker-push
 docker-push: ## Push docker images (action and user images)
