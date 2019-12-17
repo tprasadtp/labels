@@ -8,7 +8,6 @@ CLI app for managing GitHub labels for Python 3.6 and newer. 📝
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
 ![License](https://img.shields.io/github/license/tprasadtp/labels)
 
-
 ## PyPI (managed by upstream)
 
 [![PyPI](https://img.shields.io/pypi/v/labels?color=brightgreen&logo=python&logoColor=white)](https://pypi.org/project/labels/)
@@ -23,19 +22,21 @@ CLI app for managing GitHub labels for Python 3.6 and newer. 📝
 pip install labels
 ```
 
-> Package on PyPI is managed by upstream.
+> Packages on PyPI are managed by upstream.
 
 ## Docker
 
 Docker images are available from GitHub and DockerHub.
 
 ```console
-docker run -it -e LABELS_USERNAME=${GITHUB_USERNAME} \
-  -e LABELS_TOKEN=${GITHUB_TOKEN} \
-  -v labels.toml:/home/user/labels.toml:ro \
-  docker.pkg.github.com/tprasadtp/labels/labels:latest \
-  sync -o REPO_OWNER -r REPONAME
-
+docker run -it -e LABELS_TOKEN="${LABELS_TOKEN}" \
+  -v $(pwd)/labels.toml:/home/labels/labels.toml:rw \
+  tprasadtp/labels \
+  sync \
+  -o REPO_OWNER \
+  -r REPO NAME \
+  -f labels.toml \
+  -n
 ```
 
 ## Use as Actions
@@ -64,7 +65,7 @@ jobs:
 > You can use those parameters to set labels on multiple repos (use matrix explansion for faster builds).
 > However, You must specify custom personal access token with scope `repo` or `public_repo` via secrets
 > as default token will not have tho scope necessary. It is recommended to use a machine token.
-
+> Currently GitHub package registry does not support unauthenticated docker pulls. Till that issue is fixed, for compatibility reasons docker images are built during each build.
 
 ## Authentication
 
@@ -75,7 +76,6 @@ labels for a public or a private repository. Then set up two environment
 variables in your terminal:
 
 ```bash
-export LABELS_USERNAME="<GITHUB_USERNAME>"
 export LABELS_TOKEN="<GITHUB_TOKEN>"
 ```
 
