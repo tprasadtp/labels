@@ -35,7 +35,7 @@ requests = "~2.22.0"
 flake8 = "*"
 mypy = "*"
 pytest = "~5.2"
-responses = "==0.10.6"
+responses = "==0.10.9"
 pytest-mock = "~1.13"
 isort = { version = "*", extras = ["pyproject"] }
 black = "^19.10b0"
