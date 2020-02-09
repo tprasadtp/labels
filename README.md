@@ -61,7 +61,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-> If wither `owner` or `repo` are not specified, action running in repo will be implied.
+> If `owner` or `repo` are not specified, action running in repo will be implied.
 > You can use those parameters to set labels on multiple repos (use matrix expansion for faster builds).
 > However, You must specify a personal access token with scope `repo` or `public_repo`.
 
