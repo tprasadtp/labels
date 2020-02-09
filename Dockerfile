@@ -1,4 +1,4 @@
-FROM python:3.7.5-alpine3.10
+FROM python:3.7.5-alpine3.11
 LABEL maintainer="Prasad Tengse<tprasadtp@noreply.user.github.com>"
 LABEL "com.github.actions.description"="Sync/Manage GitHub issue labels defined in .github/labels.toml"
 LABEL "com.github.actions.name"="Issue Labels"
