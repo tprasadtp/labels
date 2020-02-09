@@ -34,7 +34,7 @@ requests = "~2.22.0"
 [tool.poetry.dev-dependencies]
 flake8 = "*"
 mypy = "*"
-pytest = "~5.2"
+pytest = "~5.3"
 responses = "==0.10.9"
 pytest-mock = "~2.0"
 isort = { version = "*", extras = ["pyproject"] }
