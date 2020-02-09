@@ -1,5 +1,14 @@
-FROM python:3.7.6-alpine3.11
-LABEL maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com>"
+FROM python:3.8.1-alpine
+
+ARG GITCOMMIT=""
+ARG ACTIONS_WORKFLOW=""
+ARG VERSION=""
+
+LABEL labels.image.maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com>" \
+      labels.image.repo.uri="https://github.com/tprasadtp/labels" \
+      labels.image.build.git.sha="${GITCOMMIT}" \
+      labels.image.build.workflow="${ACTIONS_WORKFLOW}" \
+      labels.image.build.version="${VERSION}"
 
 RUN addgroup -g 1000 labels \
     && adduser -G labels -u 1000 -D -h /home/labels labels \
@@ -14,12 +23,12 @@ ENV PATH "$PATH:/home/labels/.local/bin"
 # ADD Files
 COPY --chown=1000:1000 . ./labels/
 RUN pip install --user \
-        --upgrade --progress-bar=off -U \
-        --no-cache-dir \
-        ./labels \
+      --upgrade --progress-bar=off -U \
+      --no-cache-dir \
+      ./labels \
     && rm -rf /home/labels/labels \
     && rm -rf /home/labels/.cache \
-    && rm -rf /tmp/*.* /tmp/**/*.* /tmp/**/*
+    && rm -rf /tmp/*.* /tmp/*
 
 ENTRYPOINT [ "labels", "-v" ]
 CMD [ "--help" ]

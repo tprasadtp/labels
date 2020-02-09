@@ -6,16 +6,16 @@ branding:
   color: "blue"
 inputs:
   owner:
-    description: "Repository owner's user/org name"
+    description: "Repository owner's username"
     required: false
   repo:
     description: "Name of the repository (Without owner/org name)"
     required: false
   file:
-    description: "labels file"
+    description: "Labels file"
     required: false
   token:
-    description: "Github token via secrets"
+    description: "GitHub token"
     required: true
 runs:
   using: "docker"

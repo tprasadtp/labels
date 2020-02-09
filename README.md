@@ -3,9 +3,10 @@
 CLI app for managing GitHub labels for Python 3.6 and newer. 📝
 
 [![Actions](https://github.com/tprasadtp/labels/workflows/build/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=build)
-[![Labels](https://github.com/tprasadtp/labels/workflows/labels%20sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=labels+sync)
+[![Labels](https://github.com/tprasadtp/labels/workflows/labels/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=labels+sync)
+[![GitHub tag](https://img.shields.io/github/v/tag/tprasadtp/labels?label=version)](https://github.com/marketplace/actions/manage-issue-labels)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
-![License](https://img.shields.io/github/license/tprasadtp/labels)
+![License](https://img.shields.io/github/license/tprasadtp/labels?color=orange)
 
 ## PyPI (managed by upstream)
 
@@ -60,11 +61,9 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-> If `owner` and `repo` are not specified, action running in repo will be implied.
-> You can use those parameters to set labels on multiple repos (use matrix explansion for faster builds).
-> However, You must specify custom personal access token with scope `repo` or `public_repo` via secrets
-> as default token will not have tho scope necessary. It is recommended to use a machine token.
-> Currently GitHub package registry does not support unauthenticated docker pulls. Till that issue is fixed, for compatibility reasons docker images are built during each build.
+> If wither `owner` or `repo` are not specified, action running in repo will be implied.
+> You can use those parameters to set labels on multiple repos (use matrix expansion for faster builds).
+> However, You must specify a personal access token with scope `repo` or `public_repo`.
 
 ## Authentication
 
