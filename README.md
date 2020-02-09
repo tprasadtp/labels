@@ -2,8 +2,7 @@
 
 CLI app for managing GitHub labels for Python 3.6 and newer. 📝
 
-[![Build Status](https://tprasadtp.visualstudio.com/labels/_apis/build/status/tprasadtp.labels?branchName=master)](https://tprasadtp.visualstudio.com/labels/_build/latest?definitionId=2&branchName=master)
-[![DefaultBranch](https://github.com/tprasadtp/labels/workflows/build/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=build)
+[![Actions](https://github.com/tprasadtp/labels/workflows/build/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=build)
 [![Labels](https://github.com/tprasadtp/labels/workflows/labels%20sync/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=labels+sync)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
 ![License](https://img.shields.io/github/license/tprasadtp/labels)
