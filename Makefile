@@ -127,7 +127,7 @@ isort-lint: ## Check isort on all files
 mypy: ## Run mypy on files
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running mypy...\033[0m"
-	@mypy src
+	@mypy src/labels
 
 .PHONY: flake8
 flake8: ## Run flake8

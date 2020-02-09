@@ -6,7 +6,7 @@ import typing
 import attr
 import click
 
-from labels import __version__, utils
+from labels import utils
 from labels.exceptions import LabelsException
 from labels.github import Client, Label, Repository
 from labels.io import read_labels, write_labels
@@ -25,7 +25,7 @@ class LabelsContext:
 
 @click.group()
 @click.pass_context
-@click.version_option(__version__, "-V", "--version", prog_name="labels")
+@click.version_option(prog_name="labels")
 @click.option("-v", "--verbose", help="Print debug information", is_flag=True)
 @click.option(
     "-t",

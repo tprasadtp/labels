@@ -4,7 +4,6 @@ import typing
 import pytest
 from click.testing import CliRunner
 
-from labels import __version__
 from labels.cli import labels
 
 
@@ -26,12 +25,15 @@ def fixture_run_cli() -> typing.Callable:
     return run
 
 
-@pytest.mark.parametrize("version_option", ["-V", "--version"])
-def test_version_option(run_cli: typing.Callable, version_option: str) -> None:
+@pytest.mark.usefixtures("version_number", autouse=True)
+@pytest.mark.parametrize("version_option", ["--version"])
+def test_version_option(
+    run_cli: typing.Callable, version_option: str, version_number: str
+) -> None:
     """Test for the CLI version option."""
     result = run_cli(version_option)
     assert result.exit_code == 0
-    assert result.output == f"labels, version {__version__}\n"
+    assert result.output == f"labels, version {version_number}\n"
 
 
 @pytest.mark.usefixtures("mock_list_labels", "mock_repo_info")

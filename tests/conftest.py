@@ -2,12 +2,24 @@ import typing
 
 import attr
 import pytest
+import pytoml as toml
 import responses
 
 from labels.github import Label
 
 ResponseLabel = typing.Dict[str, typing.Any]
 ResponseLabels = typing.List[ResponseLabel]
+
+
+@pytest.fixture(name="version_number", scope="session")
+def fixture_version_number() -> str:
+    try:
+        with open("pyproject.toml", "r") as pyproject:
+            t = toml.load(pyproject)
+            v = t["tool"]["poetry"]["version"]
+    except Exception:
+        v = "__failed_to_read_toml_file__"
+    return v
 
 
 @pytest.fixture(name="token", scope="session")

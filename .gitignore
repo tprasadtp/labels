@@ -59,7 +59,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-Pipfile.lock
 
+# VS code
+.vscode/
 # self
 labels.toml
