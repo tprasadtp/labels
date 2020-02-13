@@ -98,12 +98,17 @@ docker-push: ## Push docker images (action and user images)
 	fi
 	@echo -e "\033[95m * Pushing Action Image\033[0m"
 	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[93m   + On master add pushing latest and $(VERSION) \033[0m"; \
+		echo -e "\033[93m   + On master add pushing latest and $(VERSION)[GitHub] \033[0m"; \
 		docker push $(DOCKER_PREFIX_GITHUB)/action:latest; \
 		docker push $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
+		echo -e "\033[93m   + On master add pushing latest and $(VERSION)[DockerHub] \033[0m"; \
+		docker push $(DOCKER_USER)/$(NAME)-action:latest; \
+		docker push $(DOCKER_USER)/$(NAME)-action:$(VERSION); \
 	else \
-		echo -e "\033[93m   + Not on master as pushing $(BRANCH).\033[0m"; \
+		echo -e "\033[93m   + Not on master as pushing $(BRANCH) [GitHub].\033[0m"; \
 		docker push $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
+		echo -e "\033[93m   + Not on master as pushing $(BRANCH) [DockerHub].\033[0m"; \
+		docker push $(DOCKER_USER)/$(NAME)-action:$(BRANCH); \
 	fi
 
 .PHONY: test
