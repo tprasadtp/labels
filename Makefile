@@ -4,9 +4,6 @@ NAME := labels
 
 ifeq ($(GITHUB_ACTIONS),true)
 	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#]+/-/g' )
-	GITHUB_SHA :=$(GITHUB_SHA)
-	GITHUB_WORKFLOW := $(GITHUB_WORKFLOW)
-	GITHUB_RUN_NUMBER := $(GITHUB_RUN_NUMBER)
 else
 	BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 	GITHUB_SHA := $(shell git rev-parse HEAD)
@@ -71,10 +68,13 @@ docker-action: ## Build docker action image
 		--build-arg VERSION=$(VERSION) .
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:latest; \
+		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:$(VERSION); \
 		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:latest; \
 		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
 	else \
 		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:$(BRANCH); \
 		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
 	fi
 
@@ -199,3 +199,12 @@ help: ## This help dialog.
         printf '\033[0m'; \
         printf "%s\n" $$help_info; \
     done
+
+.PHONY: debug-vars
+debug-vars:
+	@echo "GITHUB_ACTIONS: ${GITHUB_ACTIONS}"
+	@echo "VERSION: ${VERSION}"
+	@echo "BRANCH: ${BRANCH}"
+	@echo "GITHUB_SHA: ${GITHUB_SHA}"
+	@echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
+	@echo "GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}"

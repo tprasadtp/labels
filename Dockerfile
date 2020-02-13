@@ -16,28 +16,20 @@ RUN chmod +x src/entrypoint.sh
 # Base Labels Image
 FROM base as labels-core
 
-ARG GITCOMMIT=""
-ARG ACTIONS_WORKFLOW=""
-ARG VERSION=""
+ARG GITHUB_SHA
+ARG GITHUB_WORKFLOW
+ARG GITHUB_RUN_NUMBER
+ARG VERSION
 
-LABEL labels.image.maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com>" \
-      labels.image.repo.uri="https://github.com/tprasadtp/labels" \
-      labels.image.build.git.sha="${GITHUB_SHA}" \
-      labels.image.build.workflow="${GITHUB_WORKFLOW}" \
-      labels.image.build.run="${GITHUB_RUN_NUMBER}" \
-      labels.image.build.version="${VERSION}"
+
+LABEL labels.meta.maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com>" \
+      labels.repo.uri="https://github.com/tprasadtp/labels" \
+      labels.build.commit.sha="${GITHUB_SHA}" \
+      labels.build.action.name="${GITHUB_WORKFLOW}" \
+      labels.build.action.run="${GITHUB_RUN_NUMBER}" \
+      labels.build.package.version="${VERSION}"
 
 COPY --from=builder /install /usr/local
-
-# Action Image. Used in GitHub Actions
-FROM labels-core as action
-
-# hadolint ignore=DL3018
-RUN apk add --no-cache curl && rm -rf /var/cache/apk/*
-COPY --from=builder /src/entrypoint.sh /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
-
 
 # DockerHub Image. Used to Run as User
 FROM labels-core as hub
@@ -52,3 +44,12 @@ USER labels
 
 ENTRYPOINT [ "labels"]
 CMD [ "-v", "--help" ]
+
+# Action Image. Used in GitHub Actions
+FROM labels-core as action
+
+# hadolint ignore=DL3018
+RUN apk add --no-cache curl && rm -rf /var/cache/apk/*
+COPY --from=builder /src/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]

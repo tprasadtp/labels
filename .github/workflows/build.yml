@@ -98,7 +98,9 @@ jobs:
         run: pip install pytoml
 
       - name: Build Docker
-        run: make docker-all
+        run: |
+          make debug-vars
+          make docker-all
 
       - name: Docker Login to Registry (GitHub)
         run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin

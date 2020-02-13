@@ -24,4 +24,4 @@ inputs:
     default: "true"
 runs:
   using: "docker"
-  image: "Dockerfile"
+  image: "docker://tprasadtp/labels-action:dev"
