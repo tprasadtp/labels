@@ -17,8 +17,8 @@ fi
 echo "OWNER is set as ${INPUT_OWNER} and repo as ${INPUT_REPO}"
 
 # shellcheck disable=SC2039
-if [ "${INPUT_AUTOFETCH}" == "true" ]; then
-    echo "Autofetching URL https://raw.githubusercontent.com/${INPUT_OWNER}/${INPUT_REPO}/${GITHUB_SHA}/${INPUT_FILE}"
+if [ "${INPUT_OWNER}/${INPUT_REPO}" == "${GITHUB_REPOSITORY}" ] && [ ! -f "${INPUT_FILE}" ] ; then
+    echo "Autofetching URL https://raw.githubusercontent.com/${INPUT_OWNER}/${INPUT_REPO}/${GITHUB_SHA:-master}/${INPUT_FILE}"
     base_dir="$(dirname "${INPUT_FILE}")"
     mkdir -p "${base_dir}"
     curl -sSfL -H "Authorization: token ${INPUT_TOKEN}" "https://raw.githubusercontent.com/${INPUT_OWNER}/${INPUT_REPO}/${GITHUB_SHA}/${INPUT_FILE}" -o "${INPUT_FILE}"

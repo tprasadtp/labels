@@ -18,10 +18,6 @@ inputs:
   token:
     description: "GitHub token"
     required: true
-  autofetch:
-    description: Autofetch Labels file. Only applies of you are running this for current repo.
-    required: false
-    default: "true"
 runs:
   using: "docker"
-  image: "docker://tprasadtp/labels-action:dev"
+  image: "docker://tprasadtp/labels-action:0.3.0.20190214"
