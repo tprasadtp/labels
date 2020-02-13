@@ -27,6 +27,7 @@ jobs:
           curl -sSLO https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
           python3 get-poetry.py --version 1.0.3
           echo "::add-path::$HOME/.poetry/bin"
+          rm -f get-poetry.py
       - name: Install dependencies
         run: |
           echo ${PATH}
