@@ -22,10 +22,15 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.7
+      - name: Install Poetry
+        run: |
+          curl -sSLO https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python3 get-poetry.py --version 1.0.3
+          echo "::add-path::~/.poetry/bin"
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install poetry~=1.0.0
+          echo ${PATH}
+          which poetry
           poetry install -v --no-dev
           if [[ $LINTER == fmt-* ]]; then
             pip install black isort[pyproject] pytest responses
@@ -52,9 +57,15 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.pythonVersion }}
-    - name: Install dependencies
+    - name: Install Poetry
       run: |
-        pip install poetry~=0.1.0
+        curl -sSLO https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+        python3 get-poetry.py --version 1.0.3
+        echo "::add-path::~/.poetry/bin"
+    - name: Install Dependencies
+      run: |
+        echo ${PATH}
+        which poetry
         poetry install -v
     - name: Test
       run: poetry run make test
@@ -63,9 +74,10 @@ jobs:
       run: make dist
 
     - name: Export Version
+      id: version
       run: |
         poetry run python3 ./scripts/getversion.py | tee -a VERSION.txt
-        echo "::set-env name=VERSION::$(cat VERSION.txt)"
+        echo "::set-output name=VERSION::$(cat VERSION.txt)"
 
   # Build docker images
   docker:
@@ -78,6 +90,8 @@ jobs:
 
       - name: Build Docker
         run: make docker-all
+        env:
+          VERSION: ${{ jobs.test.steps.version.outputs.VERSION }}
 
       - name: Docker Login to Registry (GitHub)
         run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
