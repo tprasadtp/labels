@@ -22,8 +22,9 @@ ARG VERSION=""
 
 LABEL labels.image.maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com>" \
       labels.image.repo.uri="https://github.com/tprasadtp/labels" \
-      labels.image.build.git.sha="${GITCOMMIT}" \
-      labels.image.build.workflow="${ACTIONS_WORKFLOW}" \
+      labels.image.build.git.sha="${GITHUB_SHA}" \
+      labels.image.build.workflow="${GITHUB_WORKFLOW}" \
+      labels.image.build.run="${GITHUB_RUN_NUMBER}" \
       labels.image.build.version="${VERSION}"
 
 COPY --from=builder /install /usr/local

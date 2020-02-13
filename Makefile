@@ -4,12 +4,14 @@ NAME := labels
 
 ifeq ($(GITHUB_ACTIONS),true)
 	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#]+/-/g' )
-	GITCOMMIT :=$(GITHUB_SHA)
-	ACTIONS_WORKFLOW := $(GITHUB_ACTION)
+	GITHUB_SHA :=$(GITHUB_SHA)
+	GITHUB_WORKFLOW := $(GITHUB_WORKFLOW)
+	GITHUB_RUN_NUMBER := $(GITHUB_RUN_NUMBER)
 else
 	BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-	GITCOMMIT := $(shell git rev-parse HEAD)
-	ACTIONS_WORKFLOW := local
+	GITHUB_SHA := $(shell git rev-parse HEAD)
+	GITHUB_WORKFLOW := local
+	GITHUB_RUN_NUMBER := "0"
 endif
 
 
@@ -42,7 +44,9 @@ docker: ## Build DockerHub image (runs as root inide docker)
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Building Docker Image\033[0m"
 	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target hub -t $(NAME) \
-		--build-arg GITCOMMIT=$(GITCOMMIT) --build-arg ACTIONS_WORKFLOW=$(ACTIONS_WORKFLOW) \
+		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
+		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
+		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
 		--build-arg VERSION=$(VERSION) .
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
@@ -51,7 +55,7 @@ docker: ## Build DockerHub image (runs as root inide docker)
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
 	else \
-		echo -e "\033[95m * Not on master add tagging as $(BRANCH).\033[0m"; \
+		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
 		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
 	fi
@@ -61,7 +65,9 @@ docker-action: ## Build docker action image
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Building Action Image\033[0m"
 	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target action -t $(NAME)-action \
-		--build-arg GITCOMMIT=$(GITCOMMIT) --build-arg ACTIONS_WORKFLOW=$(ACTIONS_WORKFLOW) \
+		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
+		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
+		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
 		--build-arg VERSION=$(VERSION) .
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
