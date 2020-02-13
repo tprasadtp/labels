@@ -20,4 +20,4 @@ inputs:
     required: true
 runs:
   using: "docker"
-  image: "docker://tprasadtp/labels-action:0.3.0.20190214"
+  image: "docker://tprasadtp/labels-action:0.3.0.20200214"
