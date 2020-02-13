@@ -33,7 +33,7 @@ class LabelsContext:
     help="GitHub access token",
     type=str,
     required=True,
-    envvar="LABELS_TOKEN",
+    envvar=["LABELS_TOKEN", "GITHUB_TOKEN"],
 )
 def labels(ctx, token: str, verbose: bool) -> None:
     """labels - CLI to manage GitHub issue labels."""
@@ -41,6 +41,7 @@ def labels(ctx, token: str, verbose: bool) -> None:
     logger = create_logger()
     if verbose:
         logger.setLevel(logging.DEBUG)
+        logging.getLogger("requests.packages.urllib3").setLevel("DEBUG")
     else:
         logger.setLevel(logging.INFO)
 
@@ -54,7 +55,7 @@ def default_owner(labels_context: LabelsContext) -> str:
         repository = utils.load_repository_info()
         if repository is None:
             raise click.BadParameter(
-                "Unable to read respository owner from git remote URL."
+                "Unable to read repository owner from git remote URL."
             )
         labels_context.repository = repository
     return labels_context.repository.owner
@@ -96,6 +97,7 @@ def default_repo(labels_context: LabelsContext) -> str:
     "--filename",
     help="Filename for labels",
     default="labels.toml",
+    show_default=True,
     type=click.Path(),
     required=True,
 )
@@ -143,11 +145,12 @@ def fetch_cmd(context: LabelsContext, owner: str, repo: str, filename: str) -> N
     "--filename",
     help="Filename for labels",
     default="labels.toml",
+    show_default=True,
     type=click.Path(exists=True),
     required=True,
 )
 def sync_cmd(
-    context: LabelsContext, owner: str, repo: str, filename: str, dryrun: bool
+    context: LabelsContext, owner: str, repo: str, filename: str, dryrun: bool,
 ) -> None:
     """Sync labels with a GitHub repository.
 

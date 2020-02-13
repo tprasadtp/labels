@@ -4,7 +4,6 @@ on:
     paths-ignore:
       - ".gitignore"
       - ".envrc"
-      - "azure-pipelines.yml"
       - "**.md"
       - ".vscode/**"
       - ".dependabot/**"
@@ -18,18 +17,24 @@ jobs:
       matrix:
         linter: [fmt-lint, flake8, mypy]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
           python-version: 3.7
+      - name: Install Poetry
+        run: |
+          curl -sSLO https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python3 get-poetry.py --version 1.0.3
+          echo "::add-path::$HOME/.poetry/bin"
+          rm -f get-poetry.py
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install poetry==0.12.7
+          echo ${PATH}
+          which poetry
           poetry install -v --no-dev
           if [[ $LINTER == fmt-* ]]; then
-            pip install black isort[pyproject] pytest responses==0.10.6
+            pip install black isort[pyproject] pytest responses
           else
             pip install "$LINTER"
           fi
@@ -53,10 +58,15 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.pythonVersion }}
-    - name: Install dependencies
+    - name: Install Poetry
       run: |
-        python -m pip install --upgrade pip
-        pip install poetry
+        curl -sSLO https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+        python3 get-poetry.py --version 1.0.3
+        echo "::add-path::$HOME/.poetry/bin"
+    - name: Install Dependencies
+      run: |
+        echo ${PATH}
+        which poetry
         poetry install -v
     - name: Test
       run: poetry run make test
@@ -64,14 +74,22 @@ jobs:
     - name: Build
       run: make dist
 
+    - name: Export Version
+      id: version
+      run: |
+        poetry run python3 ./scripts/getversion.py | tee -a VERSION.txt
+        echo "::set-output name=VERSION::$(cat VERSION.txt)"
+
   # Build docker images
   docker:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Lint Dockerfiles
-        run: make docker-lint
+        run: |
+          make shellcheck
+          make docker-lint
 
       - name: Set up Python
         uses: actions/setup-python@v1
@@ -82,7 +100,9 @@ jobs:
         run: pip install pytoml
 
       - name: Build Docker
-        run: make docker-all
+        run: |
+          make debug-vars
+          make docker-all
 
       - name: Docker Login to Registry (GitHub)
         run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin

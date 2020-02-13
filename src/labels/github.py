@@ -52,7 +52,10 @@ class Client:
     def __init__(self, token: str, base_url: str = "https://api.github.com") -> None:
         self.base_url = base_url
         self.session = requests.Session()
-        self.headers = {"Authorization": f"token {token}"}
+        if token is not None or token != "":
+            self.headers = {"Authorization": f"token {token}"}
+        else:
+            self.headers = None
 
     def list_labels(self, repo: Repository) -> typing.List[Label]:
         """Return the list of Labels from the repository.

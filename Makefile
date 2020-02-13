@@ -2,20 +2,21 @@
 SHELL := /bin/bash
 NAME := labels
 
+ROOT_DIR := $(strip $(patsubst %/, %, $(dir $(realpath $(firstword $(MAKEFILE_LIST))))))
+
 ifeq ($(GITHUB_ACTIONS),true)
 	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#]+/-/g' )
-	GITCOMMIT :=$(GITHUB_SHA)
-	ACTIONS_WORKFLOW := $(GITHUB_ACTION)
 else
 	BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-	GITCOMMIT := $(shell git rev-parse HEAD)
-	ACTIONS_WORKFLOW := local
+	GITHUB_SHA := $(shell git rev-parse HEAD)
+	GITHUB_WORKFLOW := local
+	GITHUB_RUN_NUMBER := "0"
 endif
 
 
-VERSION := $(shell python3 scripts/getversion.py )
+VERSION ?= $(shell python3 scripts/getversion.py )
 
-export PYTHONPATH :=$(CURDIR)/src
+export PYTHONPATH :=$(ROOT_DIR)/src
 
 # Enable Buidkit if not disabled
 DOCKER_BUILDKIT ?= 1
@@ -32,11 +33,7 @@ all: clean lint test dist docker-lint docker ## clean, lint, test, dist and dock
 .PHONY: docker-lint
 docker-lint: ## Lint Dockerfiles
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Linting Dockerfile\033[0m"
-	@docker run --rm -v $(CURDIR)/.hadolint.yaml:/.hadolint.yaml:ro -i hadolint/hadolint < Dockerfile
-	@echo -e "\033[95m * Linting Dockerfile.user\033[0m"
-	@docker run --rm -v $(CURDIR)/.hadolint.yaml:/.hadolint.yaml:ro -i hadolint/hadolint < Dockerfile.user
-
+	@docker run --rm -i hadolint/hadolint < Dockerfile
 
 .PHONY: docker-all
 docker-all: docker docker-action ## Build all docker images (Github Action and DockerHub image)
@@ -44,10 +41,12 @@ docker-all: docker docker-action ## Build all docker images (Github Action and D
 .PHONY: docker
 docker: ## Build DockerHub image (runs as root inide docker)
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Building DockerHub Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME) -f Dockerfile.user \
-		--build-arg GITCOMMIT=$(GITCOMMIT) --build-arg ACTIONS_WORKFLOW=$(ACTIONS_WORKFLOW) \
-		--build-arg VERSION=$(VERSION) .
+	@echo -e "\033[95m * Building Docker Image\033[0m"
+	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target hub -t $(NAME) \
+		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
+		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
+		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
+		--build-arg VERSION=$(VERSION) $(ROOT_DIR)/.
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
 		docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
@@ -55,7 +54,7 @@ docker: ## Build DockerHub image (runs as root inide docker)
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
 	else \
-		echo -e "\033[95m * Not on master add tagging as $(BRANCH).\033[0m"; \
+		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
 		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
 	fi
@@ -64,15 +63,20 @@ docker: ## Build DockerHub image (runs as root inide docker)
 docker-action: ## Build docker action image
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Building Action Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME)-action -f Dockerfile \
-		--build-arg GITCOMMIT=$(GITCOMMIT) --build-arg ACTIONS_WORKFLOW=$(ACTIONS_WORKFLOW) \
-		--build-arg VERSION=$(VERSION) .
+	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target action -t $(NAME)-action \
+		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
+		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
+		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
+		--build-arg VERSION=$(VERSION) $(ROOT_DIR)/.
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:latest; \
+		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:$(VERSION); \
 		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:latest; \
 		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
 	else \
 		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
+		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:$(BRANCH); \
 		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
 	fi
 
@@ -96,12 +100,17 @@ docker-push: ## Push docker images (action and user images)
 	fi
 	@echo -e "\033[95m * Pushing Action Image\033[0m"
 	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[93m   + On master add pushing latest and $(VERSION) \033[0m"; \
+		echo -e "\033[93m   + On master add pushing latest and $(VERSION)[GitHub] \033[0m"; \
 		docker push $(DOCKER_PREFIX_GITHUB)/action:latest; \
 		docker push $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
+		echo -e "\033[93m   + On master add pushing latest and $(VERSION)[DockerHub] \033[0m"; \
+		docker push $(DOCKER_USER)/$(NAME)-action:latest; \
+		docker push $(DOCKER_USER)/$(NAME)-action:$(VERSION); \
 	else \
-		echo -e "\033[93m   + Not on master as pushing $(BRANCH).\033[0m"; \
+		echo -e "\033[93m   + Not on master as pushing $(BRANCH) [GitHub].\033[0m"; \
 		docker push $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
+		echo -e "\033[93m   + Not on master as pushing $(BRANCH) [DockerHub].\033[0m"; \
+		docker push $(DOCKER_USER)/$(NAME)-action:$(BRANCH); \
 	fi
 
 .PHONY: test
@@ -109,49 +118,54 @@ test: ## Test and Lint
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * pytest\033[0m"
 	# @pytest --cov=src/labels -v --cov-report=xml
-	@pytest -v
+	@pytest -v $(ROOT_DIR)
 
 .PHONY: isort
 isort: ## Run isort on all files
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running isort...\033[0m"
-	@isort --recursive --atomic .
+	@isort --recursive --atomic $(ROOT_DIR)/
 
 .PHONY: isort-lint
 isort-lint: ## Check isort on all files
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running isort...\033[0m"
-	@isort --recursive --check-only .
+	@isort --recursive --check-only $(ROOT_DIR)/
 
 .PHONY: mypy
 mypy: ## Run mypy on files
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running mypy...\033[0m"
-	@mypy src/labels
+	@mypy $(ROOT_DIR)/src/labels
 
 .PHONY: flake8
 flake8: ## Run flake8
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running flake8...\033[0m"
-	@flake8
+	@flake8 $(ROOT_DIR)/
 
 .PHONY: black
 black: ## Black formatter
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Black Formatting utils...\033[0m"
-	@black .
+	@black $(ROOT_DIR)/
 
 .PHONY: black-lint
 black-lint: ## Lint with Black
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m Linting utils...\033[0m"
-	@black --check .
+	@black --check $(ROOT_DIR)/
 
 .PHONY: fmt
 fmt: black isort ## Formatting using black  and isort (in that order)
 
 .PHONY: fmt-lint
 fmt-lint: black-lint isort-lint ## Lint with formatters
+
+.PHONY: shellcheck
+shellcheck: ## Shellcheck
+	@echo -e "\033[92m➜ $@ \033[0m"
+	shellcheck $(ROOT_DIR)/entrypoint.sh
 
 .PHONY: lint
 lint: black-lint isort-lint flake8 mypy docker-lint ## lint everything (black, isort, flake8, mypy, docker)
@@ -197,3 +211,12 @@ help: ## This help dialog.
         printf '\033[0m'; \
         printf "%s\n" $$help_info; \
     done
+
+.PHONY: debug-vars
+debug-vars:
+	@echo "GITHUB_ACTIONS: ${GITHUB_ACTIONS}"
+	@echo "VERSION: ${VERSION}"
+	@echo "BRANCH: ${BRANCH}"
+	@echo "GITHUB_SHA: ${GITHUB_SHA}"
+	@echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
+	@echo "GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}"

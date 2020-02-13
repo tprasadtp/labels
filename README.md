@@ -2,11 +2,11 @@
 
 CLI app for managing GitHub labels for Python 3.6 and newer. 📝
 
-[![Actions](https://github.com/tprasadtp/labels/workflows/build/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=build)
-[![Labels](https://github.com/tprasadtp/labels/workflows/labels/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=labels+sync)
-[![GitHub tag](https://img.shields.io/github/v/tag/tprasadtp/labels?label=version)](https://github.com/marketplace/actions/manage-issue-labels)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
-![License](https://img.shields.io/github/license/tprasadtp/labels?color=orange)
+[![actions](https://github.com/tprasadtp/labels/workflows/build/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=build)
+[![dogfood](https://github.com/tprasadtp/labels/workflows/dogfood/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=dogfood)
+[![tag](https://img.shields.io/github/v/tag/tprasadtp/labels?label=version)](https://github.com/marketplace/actions/manage-issue-labels)
+[![dependabot](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
+![license](https://img.shields.io/github/license/tprasadtp/labels?color=orange)
 
 ## PyPI (managed by upstream)
 
@@ -54,16 +54,18 @@ name: labels
 jobs:
   labels:
     - name: sync labels
-      uses: tprasadtp/labels@master
+      uses: tprasadtp/labels@0.3.0.20200214 # Use latest version available.
       with:
         # owner: "OWNERNAME" # Optional
         # repo: "REPONAME"   # Optional
+        # file: "FILENAME"   # Optional
         token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-> If `owner` or `repo` are not specified, action running in repo will be implied.
-> You can use those parameters to set labels on multiple repos (use matrix expansion for faster builds).
-> However, You must specify a personal access token with scope `repo` or `public_repo`.
+- If `owner` or `repo` are not specified, values will be calculated from `GITHUNB_REPOSITORY`.
+- If file specified is not found, then an attempt is made to fetch it from github.
+- You can use those parameters to set labels on multiple repos (use matrix expansion for faster builds).
+However, You must specify a personal access token with scope `repo` or `public_repo`.
 
 ## Authentication
 

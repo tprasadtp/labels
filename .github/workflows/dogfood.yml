@@ -3,15 +3,19 @@ on:
     branches:
       - master
       - dev
-    paths:
-    - '.github/**'
-name: labels
+    paths-ignore:
+      - ".gitignore"
+      - ".envrc"
+      - "**.md"
+      - ".vscode/**"
+      - ".dependabot/**"
+      - "_config.yml"
+name: dogfood
 jobs:
   labels:
-    name: Sync Labels
+    name: dogfood
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
     - name: sync labels
       uses: tprasadtp/labels@master
       with:

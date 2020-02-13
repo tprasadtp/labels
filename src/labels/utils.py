@@ -18,6 +18,7 @@ def load_repository_info(remote_name: str = "origin") -> typing.Optional[Reposit
     SSH   url format -> 'git@github.com:owner/name.git'
     """
     logger = logging.getLogger("labels")
+
     logger.debug(f"Load repository information for '{remote_name}'.")
 
     proc = subprocess.run(

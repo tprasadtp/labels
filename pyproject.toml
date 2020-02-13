@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "labels"
-version = "0.3.0.20190209"
+version = "0.3.0.20200214"
 description = "Python (3.6 and newer) CLI app to manage GitHub issue labels"
 license = "MIT"
 authors = ["Raphael Pierzina <raphael@hackebrot.de>"]
@@ -35,11 +35,11 @@ requests = "~2.22.0"
 flake8 = "*"
 mypy = "*"
 pytest = "~5.2"
-responses = "==0.10.9"
+responses = "*"
 pytest-mock = "~2.0"
 isort = { version = "*", extras = ["pyproject"] }
 black = "^19.10b0"
 
 [build-system]
-requires = ["poetry==0.12"]
+requires = ["poetry>=1.0.2"]
 build-backend = "poetry.masonry.api"
