@@ -33,7 +33,7 @@ class LabelsContext:
     help="GitHub access token",
     type=str,
     required=True,
-    envvar="LABELS_TOKEN",
+    envvar=["LABELS_TOKEN", "GITHUB_TOKEN", "INPUT_TOKEN"],
 )
 def labels(ctx, token: str, verbose: bool) -> None:
     """labels - CLI to manage GitHub issue labels."""
@@ -81,6 +81,7 @@ def default_repo(labels_context: LabelsContext) -> str:
     help="GitHub owner name",
     type=str,
     default=default_owner,
+    envvar=["LABELS_OWNER", "GITHUB_OWNER", "INPUT_OWNER"],
     required=True,
 )
 @click.option(
@@ -88,6 +89,7 @@ def default_repo(labels_context: LabelsContext) -> str:
     "--repo",
     help="GitHub repository name",
     type=str,
+    envvar=["LABELS_REPO", "GITHUB_REPO", "INPUT_REPO"],
     default=default_repo,
     required=True,
 )
@@ -96,6 +98,7 @@ def default_repo(labels_context: LabelsContext) -> str:
     "--filename",
     help="Filename for labels",
     default="labels.toml",
+    envvar=["LABELS_FILENAME", "INPUT_FILE"],
     type=click.Path(),
     required=True,
 )
@@ -126,6 +129,7 @@ def fetch_cmd(context: LabelsContext, owner: str, repo: str, filename: str) -> N
     "--owner",
     help="GitHub owner name",
     type=str,
+    envvar=["LABELS_OWNER", "GITHUB_OWNER", "INPUT_OWNER"],
     default=default_owner,
     required=True,
 )
@@ -134,6 +138,7 @@ def fetch_cmd(context: LabelsContext, owner: str, repo: str, filename: str) -> N
     "--repo",
     help="GitHub repository name",
     type=str,
+    envvar=["LABELS_REPO", "GITHUB_REPO", "INPUT_REPO"],
     default=default_repo,
     required=True,
 )
@@ -142,12 +147,13 @@ def fetch_cmd(context: LabelsContext, owner: str, repo: str, filename: str) -> N
     "-f",
     "--filename",
     help="Filename for labels",
+    envvar=["LABELS_FILENAME", "INPUT_FILE"],
     default="labels.toml",
     type=click.Path(exists=True),
     required=True,
 )
 def sync_cmd(
-    context: LabelsContext, owner: str, repo: str, filename: str, dryrun: bool
+    context: LabelsContext, owner: str, repo: str, filename: str, dryrun: bool,
 ) -> None:
     """Sync labels with a GitHub repository.
 

@@ -12,12 +12,14 @@ LABEL labels.image.maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com
 
 # ADD Files
 COPY . ./tmp
-RUN pip install \
+RUN apk add --update curl \
+      && pip install \
       --upgrade --progress-bar=off -U \
       --no-cache-dir \
       ./tmp \
     && cp tmp/entrypoint.sh /bin/entrypoint.sh \
     && chmod +x /bin/entrypoint.sh \
+    && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*.* /tmp/*
 
 ENTRYPOINT [ "/bin/entrypoint.sh" ]

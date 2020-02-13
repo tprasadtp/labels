@@ -14,9 +14,14 @@ inputs:
   file:
     description: "Labels file"
     required: false
+    default: ".github/labels.toml"
   token:
     description: "GitHub token"
     required: true
+  autofetch:
+    description: Autofetch URL
+    required: false
+    default: "true"
 runs:
   using: "docker"
   image: "Dockerfile"
