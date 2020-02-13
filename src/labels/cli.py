@@ -33,7 +33,7 @@ class LabelsContext:
     help="GitHub access token",
     type=str,
     required=True,
-    envvar=["LABELS_TOKEN", "GITHUB_TOKEN", "INPUT_TOKEN"],
+    envvar=["LABELS_TOKEN", "GITHUB_TOKEN"],
 )
 def labels(ctx, token: str, verbose: bool) -> None:
     """labels - CLI to manage GitHub issue labels."""

@@ -1,7 +1,8 @@
 FROM python:3.8.1-alpine as base
 
+# Builder Stage
 FROM base as builder
-# ADD Files
+
 COPY . ./src
 # hadolint ignore=DL3018
 RUN apk add --no-cache curl libffi-dev openssl-dev python3-dev gcc musl-dev
@@ -29,20 +30,23 @@ COPY --from=builder /install /usr/local
 
 # Action Image. Used in GitHub Actions
 FROM labels-core as action
+
+# hadolint ignore=DL3018
+RUN apk add --no-cache curl && rm -rf /var/cache/apk/*
 COPY --from=builder /src/entrypoint.sh /usr/local/bin/entrypoint.sh
+
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 
 # DockerHub Image. Used to Run as User
 FROM labels-core as hub
+
 RUN addgroup -g 1000 labels \
     && adduser -G labels -u 1000 -D -h /home/labels labels \
     && mkdir -p /home/labels \
     && chown -R 1000:1000 /home/labels
 
-# ENV stuff
 WORKDIR /home/labels/
-
 USER labels
 
 ENTRYPOINT [ "labels"]
