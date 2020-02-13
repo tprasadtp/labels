@@ -408,15 +408,3 @@ def fixture_labels_file_load() -> str:
 def fixture_labels_file_sync(tmpdir: typing.Any) -> str:
     """Return a filepath to an existing labels file for the sync test."""
     return "tests/sync.toml"
-
-
-@pytest.fixture(name="set_env_github_actions")
-def mock_env_github_actions_set(monkeypatch):
-    """Set GITHUB_ACTIONS=true"""
-    monkeypatch.setenv("GITHUB_ACTIONS", "true")
-
-
-@pytest.fixture(name="unset_env_github_actions")
-def mock_env_github_actions_not_set(monkeypatch):
-    """Set GITHUB_ACTIONS=true"""
-    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)

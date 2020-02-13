@@ -87,7 +87,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Lint Dockerfiles
-        run: make docker-lint
+        run: |
+          make shellcheck
+          make docker-lint
 
       - name: Set up Python
         uses: actions/setup-python@v1

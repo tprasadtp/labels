@@ -2,6 +2,8 @@
 SHELL := /bin/bash
 NAME := labels
 
+ROOT_DIR := $(strip $(patsubst %/, %, $(dir $(realpath $(firstword $(MAKEFILE_LIST))))))
+
 ifeq ($(GITHUB_ACTIONS),true)
 	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#]+/-/g' )
 else
@@ -14,7 +16,7 @@ endif
 
 VERSION ?= $(shell python3 scripts/getversion.py )
 
-export PYTHONPATH :=$(CURDIR)/src
+export PYTHONPATH :=$(ROOT_DIR)/src
 
 # Enable Buidkit if not disabled
 DOCKER_BUILDKIT ?= 1
@@ -44,7 +46,7 @@ docker: ## Build DockerHub image (runs as root inide docker)
 		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
 		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
 		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
-		--build-arg VERSION=$(VERSION) .
+		--build-arg VERSION=$(VERSION) $(ROOT_DIR)/.
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
 		docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
@@ -65,7 +67,7 @@ docker-action: ## Build docker action image
 		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
 		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
 		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
-		--build-arg VERSION=$(VERSION) .
+		--build-arg VERSION=$(VERSION) $(ROOT_DIR)/.
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
 		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:latest; \
@@ -116,49 +118,54 @@ test: ## Test and Lint
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * pytest\033[0m"
 	# @pytest --cov=src/labels -v --cov-report=xml
-	@pytest -v
+	@pytest -v $(ROOT_DIR)
 
 .PHONY: isort
 isort: ## Run isort on all files
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running isort...\033[0m"
-	@isort --recursive --atomic .
+	@isort --recursive --atomic $(ROOT_DIR)/
 
 .PHONY: isort-lint
 isort-lint: ## Check isort on all files
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running isort...\033[0m"
-	@isort --recursive --check-only .
+	@isort --recursive --check-only $(ROOT_DIR)/
 
 .PHONY: mypy
 mypy: ## Run mypy on files
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running mypy...\033[0m"
-	@mypy src/labels
+	@mypy $(ROOT_DIR)/src/labels
 
 .PHONY: flake8
 flake8: ## Run flake8
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Running flake8...\033[0m"
-	@flake8
+	@flake8 $(ROOT_DIR)/
 
 .PHONY: black
 black: ## Black formatter
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Black Formatting utils...\033[0m"
-	@black .
+	@black $(ROOT_DIR)/
 
 .PHONY: black-lint
 black-lint: ## Lint with Black
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m Linting utils...\033[0m"
-	@black --check .
+	@black --check $(ROOT_DIR)/
 
 .PHONY: fmt
 fmt: black isort ## Formatting using black  and isort (in that order)
 
 .PHONY: fmt-lint
 fmt-lint: black-lint isort-lint ## Lint with formatters
+
+.PHONY: shellcheck
+shellcheck: ## Shellcheck
+	@echo -e "\033[92m➜ $@ \033[0m"
+	shellcheck $(ROOT_DIR)/entrypoint.sh
 
 .PHONY: lint
 lint: black-lint isort-lint flake8 mypy docker-lint ## lint everything (black, isort, flake8, mypy, docker)
