@@ -19,7 +19,7 @@ inputs:
     description: "GitHub token"
     required: true
   autofetch:
-    description: Autofetch URL
+    description: Autofetch Labels file. Only applies of you are running this for current repo.
     required: false
     default: "true"
 runs:
