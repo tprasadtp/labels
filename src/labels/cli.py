@@ -41,6 +41,7 @@ def labels(ctx, token: str, verbose: bool) -> None:
     logger = create_logger()
     if verbose:
         logger.setLevel(logging.DEBUG)
+        logging.getLogger("requests.packages.urllib3").setLevel("DEBUG")
     else:
         logger.setLevel(logging.INFO)
 
@@ -54,7 +55,7 @@ def default_owner(labels_context: LabelsContext) -> str:
         repository = utils.load_repository_info()
         if repository is None:
             raise click.BadParameter(
-                "Unable to read respository owner from git remote URL."
+                "Unable to read repository owner from git remote URL."
             )
         labels_context.repository = repository
     return labels_context.repository.owner
@@ -81,7 +82,6 @@ def default_repo(labels_context: LabelsContext) -> str:
     help="GitHub owner name",
     type=str,
     default=default_owner,
-    envvar=["LABELS_OWNER", "GITHUB_OWNER", "INPUT_OWNER"],
     required=True,
 )
 @click.option(
@@ -89,7 +89,6 @@ def default_repo(labels_context: LabelsContext) -> str:
     "--repo",
     help="GitHub repository name",
     type=str,
-    envvar=["LABELS_REPO", "GITHUB_REPO", "INPUT_REPO"],
     default=default_repo,
     required=True,
 )
@@ -98,7 +97,7 @@ def default_repo(labels_context: LabelsContext) -> str:
     "--filename",
     help="Filename for labels",
     default="labels.toml",
-    envvar=["LABELS_FILENAME", "INPUT_FILE"],
+    show_default=True,
     type=click.Path(),
     required=True,
 )
@@ -129,7 +128,6 @@ def fetch_cmd(context: LabelsContext, owner: str, repo: str, filename: str) -> N
     "--owner",
     help="GitHub owner name",
     type=str,
-    envvar=["LABELS_OWNER", "GITHUB_OWNER", "INPUT_OWNER"],
     default=default_owner,
     required=True,
 )
@@ -138,7 +136,6 @@ def fetch_cmd(context: LabelsContext, owner: str, repo: str, filename: str) -> N
     "--repo",
     help="GitHub repository name",
     type=str,
-    envvar=["LABELS_REPO", "GITHUB_REPO", "INPUT_REPO"],
     default=default_repo,
     required=True,
 )
@@ -147,8 +144,8 @@ def fetch_cmd(context: LabelsContext, owner: str, repo: str, filename: str) -> N
     "-f",
     "--filename",
     help="Filename for labels",
-    envvar=["LABELS_FILENAME", "INPUT_FILE"],
     default="labels.toml",
+    show_default=True,
     type=click.Path(exists=True),
     required=True,
 )

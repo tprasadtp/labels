@@ -36,7 +36,9 @@ def test_version_option(
     assert result.output == f"labels, version {version_number}\n"
 
 
-@pytest.mark.usefixtures("mock_list_labels", "mock_repo_info")
+@pytest.mark.usefixtures(
+    "mock_list_labels", "mock_repo_info", "unset_env_github_actions"
+)
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("hackebrot", "pytest-emoji", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -51,7 +53,9 @@ def test_fetch_default_owner_and_repo(
     assert f"Requesting labels for {repo_owner}/{repo_name}" in result.output
 
 
-@pytest.mark.usefixtures("mock_list_labels", "mock_repo_info")
+@pytest.mark.usefixtures(
+    "mock_list_labels", "mock_repo_info", "unset_env_github_actions"
+)
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("hackebrot", "labels", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -66,7 +70,9 @@ def test_fetch_default_owner(
     assert f"Requesting labels for {repo_owner}/{repo_name}" in result.output
 
 
-@pytest.mark.usefixtures("mock_list_labels", "mock_repo_info")
+@pytest.mark.usefixtures(
+    "mock_list_labels", "mock_repo_info", "unset_env_github_actions"
+)
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("pytest-dev", "pytest-emoji", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -81,7 +87,9 @@ def test_fetch_default_repo(
     assert f"Requesting labels for {repo_owner}/{repo_name}" in result.output
 
 
-@pytest.mark.usefixtures("mock_list_labels", "mock_repo_info")
+@pytest.mark.usefixtures(
+    "mock_list_labels", "mock_repo_info", "unset_env_github_actions"
+)
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("pytest-dev", "pytest", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -96,7 +104,7 @@ def test_fetch(
     assert f"Requesting labels for {repo_owner}/{repo_name}" in result.output
 
 
-@pytest.mark.usefixtures("mock_sync", "mock_repo_info")
+@pytest.mark.usefixtures("mock_sync", "mock_repo_info", "unset_env_github_actions")
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("hackebrot", "pytest-emoji", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -116,7 +124,7 @@ def test_sync_default_owner_and_repo(
     )
 
 
-@pytest.mark.usefixtures("mock_sync", "mock_repo_info")
+@pytest.mark.usefixtures("mock_sync", "mock_repo_info", "unset_env_github_actions")
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("hackebrot", "labels", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -136,7 +144,7 @@ def test_sync_default_owner(
     )
 
 
-@pytest.mark.usefixtures("mock_sync", "mock_repo_info")
+@pytest.mark.usefixtures("mock_sync", "mock_repo_info", "unset_env_github_actions")
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("pytest-dev", "pytest-emoji", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -156,7 +164,7 @@ def test_sync_default_repo(
     )
 
 
-@pytest.mark.usefixtures("mock_sync", "mock_repo_info")
+@pytest.mark.usefixtures("mock_sync", "mock_repo_info", "unset_env_github_actions")
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("pytest-dev", "pytest", "git@github.com:hackebrot/pytest-emoji.git")],
@@ -176,7 +184,9 @@ def test_sync(
     )
 
 
-@pytest.mark.usefixtures("mock_list_labels", "mock_repo_info")
+@pytest.mark.usefixtures(
+    "mock_list_labels", "mock_repo_info", "unset_env_github_actions"
+)
 @pytest.mark.parametrize(
     "repo_owner, repo_name, remote_url",
     [("pytest-dev", "pytest", "git@github.com:hackebrot/pytest-emoji.git")],

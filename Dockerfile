@@ -1,4 +1,19 @@
-FROM python:3.8.1-alpine
+FROM python:3.8.1-alpine as base
+
+FROM base as builder
+# ADD Files
+COPY . ./src
+# hadolint ignore=DL3018
+RUN apk add --no-cache curl libffi-dev openssl-dev python3-dev gcc musl-dev
+RUN pip install \
+      --upgrade --progress-bar=off -U \
+      --no-cache-dir \
+      --prefix=/install \
+      ./src
+RUN chmod +x src/entrypoint.sh
+
+# Base Labels Image
+FROM base as labels-core
 
 ARG GITCOMMIT=""
 ARG ACTIONS_WORKFLOW=""
@@ -10,16 +25,25 @@ LABEL labels.image.maintainer="Prasad Tengse<tprasadtp@noreply.labels.github.com
       labels.image.build.workflow="${ACTIONS_WORKFLOW}" \
       labels.image.build.version="${VERSION}"
 
-# ADD Files
-COPY . ./tmp
-RUN apk add --update curl \
-      && pip install \
-      --upgrade --progress-bar=off -U \
-      --no-cache-dir \
-      ./tmp \
-    && cp tmp/entrypoint.sh /bin/entrypoint.sh \
-    && chmod +x /bin/entrypoint.sh \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/*.* /tmp/*
+COPY --from=builder /install /usr/local
 
-ENTRYPOINT [ "/bin/entrypoint.sh" ]
+# Action Image. Used in GitHub Actions
+FROM labels-core as action
+COPY --from=builder /src/entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+
+
+# DockerHub Image. Used to Run as User
+FROM labels-core as hub
+RUN addgroup -g 1000 labels \
+    && adduser -G labels -u 1000 -D -h /home/labels labels \
+    && mkdir -p /home/labels \
+    && chown -R 1000:1000 /home/labels
+
+# ENV stuff
+WORKDIR /home/labels/
+
+USER labels
+
+ENTRYPOINT [ "labels"]
+CMD [ "-v", "--help" ]

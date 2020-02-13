@@ -13,7 +13,7 @@ else
 endif
 
 
-VERSION := $(shell python3 scripts/getversion.py )
+VERSION ?= $(shell python3 scripts/getversion.py )
 
 export PYTHONPATH :=$(CURDIR)/src
 
@@ -32,11 +32,7 @@ all: clean lint test dist docker-lint docker ## clean, lint, test, dist and dock
 .PHONY: docker-lint
 docker-lint: ## Lint Dockerfiles
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Linting Dockerfile\033[0m"
-	@docker run --rm -v $(CURDIR)/.hadolint.yaml:/.hadolint.yaml:ro -i hadolint/hadolint < Dockerfile
-	@echo -e "\033[95m * Linting Dockerfile.user\033[0m"
-	@docker run --rm -v $(CURDIR)/.hadolint.yaml:/.hadolint.yaml:ro -i hadolint/hadolint < Dockerfile.user
-
+	@docker run --rm -i hadolint/hadolint < Dockerfile
 
 .PHONY: docker-all
 docker-all: docker docker-action ## Build all docker images (Github Action and DockerHub image)
@@ -44,8 +40,8 @@ docker-all: docker docker-action ## Build all docker images (Github Action and D
 .PHONY: docker
 docker: ## Build DockerHub image (runs as root inide docker)
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Building DockerHub Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME) -f Dockerfile.user \
+	@echo -e "\033[95m * Building Docker Image\033[0m"
+	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target hub -t $(NAME) \
 		--build-arg GITCOMMIT=$(GITCOMMIT) --build-arg ACTIONS_WORKFLOW=$(ACTIONS_WORKFLOW) \
 		--build-arg VERSION=$(VERSION) .
 	@if [ $(BRANCH) == "master" ]; then \
@@ -64,7 +60,7 @@ docker: ## Build DockerHub image (runs as root inide docker)
 docker-action: ## Build docker action image
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[95m * Building Action Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build -t $(NAME)-action -f Dockerfile \
+	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target action -t $(NAME)-action \
 		--build-arg GITCOMMIT=$(GITCOMMIT) --build-arg ACTIONS_WORKFLOW=$(ACTIONS_WORKFLOW) \
 		--build-arg VERSION=$(VERSION) .
 	@if [ $(BRANCH) == "master" ]; then \
