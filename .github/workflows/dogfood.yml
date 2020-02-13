@@ -10,10 +10,10 @@ on:
       - ".vscode/**"
       - ".dependabot/**"
       - "_config.yml"
-name: labels
+name: dogfood
 jobs:
   labels:
-    name: Sync Labels
+    name: dogfood
     runs-on: ubuntu-latest
     steps:
     - name: sync labels

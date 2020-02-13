@@ -2,11 +2,11 @@
 
 CLI app for managing GitHub labels for Python 3.6 and newer. 📝
 
-[![Actions](https://github.com/tprasadtp/labels/workflows/build/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=build)
-[![Labels](https://github.com/tprasadtp/labels/workflows/labels/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=labels+sync)
-[![GitHub tag](https://img.shields.io/github/v/tag/tprasadtp/labels?label=version)](https://github.com/marketplace/actions/manage-issue-labels)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
-![License](https://img.shields.io/github/license/tprasadtp/labels?color=orange)
+[![actions](https://github.com/tprasadtp/labels/workflows/build/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=build)
+[![dogfood](https://github.com/tprasadtp/labels/workflows/dogfood/badge.svg)](https://github.com/tprasadtp/labels/actions?workflow=dogfood)
+[![tag](https://img.shields.io/github/v/tag/tprasadtp/labels?label=version)](https://github.com/marketplace/actions/manage-issue-labels)
+[![dependabot](https://api.dependabot.com/badges/status?host=github&repo=tprasadtp/labels)](https://app.dependabot.com)
+![license](https://img.shields.io/github/license/tprasadtp/labels?color=orange)
 
 ## PyPI (managed by upstream)
 
