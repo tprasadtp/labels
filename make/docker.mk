@@ -3,7 +3,7 @@
 # But AFTER defining all variables.
 
 # Docker build context directory. If not specified, WATCHTOWER_BASE/ is assumed!
-DOCKER_CONTEXT_DIR ?= $(WATCHTOWER_BASE)/
+DOCKER_CONTEXT_DIR ?= $(WATCHTOWER_BASE)
 
 # Full path, including filename for Dockerfile. If not specified, WATCHTOWER_BASE/Dockerfile is assumed
 DOCKERFILE_PATH ?= $(WATCHTOWER_BASE)/Dockerfile
@@ -26,7 +26,7 @@ DOCKER_USER ?= tprasadtp
 # Set this to true if its a fork
 UPSTREAM_PRESENT ?= false
 
-# You MUST also set below two variables, if UPSTREAM_PRESENT is true
+# We MUST also set below two variables, if UPSTREAM_PRESENT is true
 UPSTREAM_AUTHOR  ?=
 UPSTREAM_PRESENT ?=
 
@@ -86,12 +86,35 @@ endif
 
 
 # VERSION
-VERSION ?= $(GIT_REF)
+# If we have VERSION, It means
+# 1. We want to tag docker images with VERSION if we are on master branch.
+# 2. We want to push those tags to the registry from CI.
+# 3. Git Tags are completely independent of this VERSION, though they can be co-ordinated not to
+#    clash or conflict, but we do not take care of it in the makefile.
+# 4. We prefer not to push docker images on tag push builds, unless tags and VERSION
+#    do not conflict or are meant for completely different purposes.
+# Intended Usage:
+# 1. Forks/Upstream: If we are building a docker image for upstream project and we would like to reflect upstream's
+#    version in our docker tags,
+# 2. Github Actions: To provide stable tagged releases yet maintain ability for internal uses to use master branch.
+#    We will not push images on tags, tags will only help GitHub pull the right action.yml file.
+#    - Release Workflow. All commmits to master will push images tagged with VERSION to the registry,
+#      which should be the NEXT Version of the action.
+#      On tag push(or after if done manually), CI/User will
+#	   a. Pull/Build the current VERSION image,
+#      b. Update action.yml to reflect the VERSION tag.
+#      c. BUMP the VERSION to NEXT VERSION
+#      d. Tag image with NEXT VERSION and push it (to avoid breaking builds which refer to repo@master)
+#      e. And finally create a new commit on master which SHOULD JUST INCLUDE the version bump.
+#      So that way, all tagged commit will reflect to tagged dockerfiles, and master brach will reflect NEXT VERSION.
+
+# If not defined, we will set this to empty
+VERSION ?=
 
 # Check if we have buildx enabled
 ifeq ($(BUILDX_ENABLE),1)
 	DOCKER_BUILD_COMMAND  := buildx build --platform $(BUILDX_PLATFORMS) $(shell if [[ "$(BUILDX_PUSH)" == "1" ]]; then echo "--push"; fi)
-	DOCKER_INSPECT_ARGS   := buildx imagetools inspect
+	DOCKER_INSPECT_ARGS   := buildx imagetools inspect --raw | jq ".[].Config.Labels"
 	DOCKER_INSPECT_PARSER :=
 else
 	DOCKER_BUILD_COMMAND  := build
@@ -102,7 +125,7 @@ endif
 # Now start building docker tags
 # If we are on master and VERSION is set, add additional tag USERNAME/NAME:VERSION
 ifeq ($(GIT_REF),master)
-	DOCKER_TAGS := $(DOCKER_USER)/$(NAME):latest $(shell if [[ "$(VERSION)" != "" ]] && [[ "$(VERSION)" != "master" ]]; then echo "$(DOCKER_USER)/$(NAME):$(VERSION)"; fi )
+	DOCKER_TAGS := $(DOCKER_USER)/$(NAME):latest $(shell if [[ "$(VERSION)" != "" ]]; then echo "$(DOCKER_USER)/$(NAME):$(VERSION)"; fi )
 else
 	DOCKER_TAGS := $(DOCKER_USER)/$(NAME):$(GIT_REF)
 endif
@@ -110,14 +133,10 @@ endif
 # Build --tag argument
 DOCKER_TAG_ARGS := $(addprefix --tag ,$(DOCKER_TAGS))
 
-# Handle squash
-ifeq ($(DOCKER_SQUASH),1)
-	DOCKER_BUILD_COMMAND += --squash
-endif
 
 ifeq ($(UPSTREAM_PRESENT),true)
-	UPSTREAM_ARGS :=  --label io.github.tprasadtp.upstream.author="$(UPSTREAM_AUTHOR)" \
-    --label io.github.tprasadtp.upstream.url="$(UPSTREAM_URL)"
+	UPSTREAM_ARGS := --label io.github.tprasadtp.upstream.author="$(UPSTREAM_AUTHOR)"
+    UPSTREAM_ARGS += --label io.github.tprasadtp.upstream.url="$(UPSTREAM_URL)"
 else
 	UPSTREAM_ARGS :=
 endif
@@ -135,7 +154,6 @@ docker: ## Build docker image.
     $(DOCKER_BUILD_COMMAND) \
     $(DOCKER_TAG_ARGS) \
     $(DOCKER_EXTRA_ARGS) \
-    --build-arg VERSION=$(VERSION) \
     --build-arg GIT_COMMIT=$(GIT_COMMIT) \
     --label org.opencontainers.image.vendor="$(IMAGE_VENDOR)" \
     --label org.opencontainers.image.source="$(IMAGE_SOURCE)" \
@@ -157,14 +175,18 @@ docker: ## Build docker image.
     --label io.github.tprasadtp.upstream.present="$(UPSTREAM_PRESENT)" \
     $(UPSTREAM_ARGS) \
     --file $(DOCKER_CONTEXT_DIR)/Dockerfile \
-    $(patsubst %/, %, $(DOCKER_CONTEXT_DIR))
+    $(DOCKER_CONTEXT_DIR)
+
+.PHONY: docker-inspect
+docker-inspect:
+	@echo -e "\033[92m➜ $@ \033[0m"
 	docker $(DOCKER_INSPECT_ARGS) $(firstword $(DOCKER_TAGS)) $(DOCKER_INSPECT_PARSER)
 
 .PHONY: docker-push
 docker-push: ## Push docker image.
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@echo -e "\033[92m🐳 Pushing $(DOCKER_USER)/$(NAME):$(DOCKER_TAG) [DockerHub]\033[0m"
-	docker push $(DOCKER_USER)/$(NAME):$(DOCKER_TAG)
+	@for img in "$(DOCKER_TAGS)"; do echo "docker push $img"; done
 
 
 .PHONY: debug-docker-vars

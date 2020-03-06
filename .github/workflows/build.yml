@@ -129,6 +129,7 @@ jobs:
         run: |
             make debug-docker-vars
             make docker
+            make docker-inspect
         env:
           BUILDX_PUSH: 1
           BUILDX_ENABLE: 1
