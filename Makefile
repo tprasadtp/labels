@@ -23,6 +23,7 @@ UPSTREAM_URL       := https://github.com/hackebrot/labels
 VERSION            := $(shell python3 "$(WATCHTOWER_BASE)/scripts/getversion.py")
 
 include $(WATCHTOWER_BASE)/make/docker.mk
+include $(WATCHTOWER_BASE)/make/python-fmt.mk
 
 .PHONY: test
 test: ## Test and Lint
