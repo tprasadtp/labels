@@ -184,8 +184,8 @@ docker-inspect:
 .PHONY: docker-push
 docker-push: ## Push docker image.
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[92m🐳 Pushing $(DOCKER_USER)/$(NAME):$(DOCKER_TAG) [DockerHub]\033[0m"
-	@for img in "$(DOCKER_TAGS)"; do echo "docker push $img"; done
+	@echo -e "\033[92m🐳 Pushing $(DOCKER_TAGS) [DockerHub]\033[0m"
+	@for img in "$(DOCKER_TAGS)"; do docker push "$${img}"; done
 
 
 .PHONY: debug-docker-vars

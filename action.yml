@@ -20,5 +20,5 @@ inputs:
     required: true
 runs:
   using: "docker"
-  image: "docker://tprasadtp/labels:0.3.0.20200214"
+  image: "docker://tprasadtp/labels:0.3.0+tprasadtp"
   entrypoint: /usr/local/bin/entrypoint.sh
