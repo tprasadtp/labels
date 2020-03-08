@@ -17,7 +17,7 @@ RUN chmod +x src/entrypoint.sh
 FROM base as release
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache
+RUN apk add --no-cache curl
 
 COPY --from=builder /install /usr/local
 COPY --from=builder /src/entrypoint.sh /usr/local/bin/entrypoint.sh
