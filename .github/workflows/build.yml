@@ -9,7 +9,7 @@ on:
       - ".dependabot/**"
       - "_config.yml"
     tags-ignore:
-      - "**"
+      - "v*"
   pull_request:
 jobs:
   # lint everything
