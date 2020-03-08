@@ -142,7 +142,7 @@ endif
 .PHONY: docker-lint
 docker-lint: ## Runs the linter on Dockerfiles.
 	@echo -e "\033[92m➜ $@ \033[0m"
-	docker run --rm -i hadolint/hadolint < $(DOCKER_CONTEXT_DIR)/Dockerfile
+	docker run --rm -i hadolint/hadolint < "$(DOCKER_CONTEXT_DIR)/Dockerfile"
 
 .PHONY: docker
 docker: ## Build docker image.
