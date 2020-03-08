@@ -1,3 +1,4 @@
+# BEGIN-DOCKER-TEMPLATE
 
 # Docker Makefile. This sould be used along with help.mk
 # But AFTER defining all variables.
@@ -111,23 +112,21 @@ endif
 # If not defined, we will set this to empty
 VERSION ?=
 
-# Check if we have buildx enabled
-ifeq ($(BUILDX_ENABLE),1)
-	DOCKER_BUILD_COMMAND  := buildx build --platform $(BUILDX_PLATFORMS) $(shell if [[ "$(BUILDX_PUSH)" == "1" ]]; then echo "--push"; fi)
-	DOCKER_INSPECT_ARGS   := buildx imagetools inspect --raw | jq ".[].Config.Labels"
-	DOCKER_INSPECT_PARSER :=
-else
-	DOCKER_BUILD_COMMAND  := build
-	DOCKER_INSPECT_ARGS   := image inspect
-	DOCKER_INSPECT_PARSER := | jq ".[].Config.Labels"
-endif
-
 # Now start building docker tags
 # If we are on master and VERSION is set, add additional tag USERNAME/NAME:VERSION
 ifeq ($(GIT_REF),master)
 	DOCKER_TAGS := $(DOCKER_USER)/$(NAME):latest $(shell if [[ "$(VERSION)" != "" ]]; then echo "$(DOCKER_USER)/$(NAME):$(VERSION)"; fi )
 else
 	DOCKER_TAGS := $(DOCKER_USER)/$(NAME):$(GIT_REF)
+endif
+
+# Check if we have buildx enabled
+ifeq ($(BUILDX_ENABLE),1)
+	DOCKER_BUILD_COMMAND  := buildx build --platform $(BUILDX_PLATFORMS) $(shell if [[ "$(BUILDX_PUSH)" == "1" ]]; then echo "--push"; fi)
+	DOCKER_INSPECT_ARGS   := docker buildx imagetools inspect --raw $(firstword $(DOCKER_TAGS)) | jq
+else
+	DOCKER_BUILD_COMMAND  := build
+	DOCKER_INSPECT_ARGS   := image inspect $(firstword $(DOCKER_TAGS)) | jq ".[].Config.Labels"
 endif
 
 # Build --tag argument
@@ -154,19 +153,19 @@ docker: ## Build docker image.
     $(DOCKER_BUILD_COMMAND) \
     $(DOCKER_TAG_ARGS) \
     $(DOCKER_EXTRA_ARGS) \
-    --build-arg GIT_COMMIT=$(GIT_COMMIT) \
-    --label org.opencontainers.image.vendor="$(IMAGE_VENDOR)" \
-    --label org.opencontainers.image.source="$(IMAGE_SOURCE)" \
-    --label org.opencontainers.image.url="$(IMAGE_URL)" \
-    --label org.opencontainers.image.revision="$(GITHUB_SHA)" \
-    --label org.opencontainers.image.documentation="$(IMAGE_DOCUMENTATION)" \
-    --label org.opencontainers.image.title="$(IMAGE_TITLE)" \
+    --build-arg GIT_COMMIT="$(GIT_COMMIT)" \
+    --label org.opencontainers.image.created="$(IMAGE_BUILD_DATE)" \
     --label org.opencontainers.image.description="$(IMAGE_DESC)" \
-    --label org.opencontainers.image.version="$(VERSION)" \
+    --label org.opencontainers.image.documentation="$(IMAGE_DOCUMENTATION)" \
     --label org.opencontainers.image.licenses="$(IMAGE_LICENSES)" \
+    --label org.opencontainers.image.revision="$(GITHUB_SHA)" \
+    --label org.opencontainers.image.source="$(IMAGE_SOURCE)" \
+    --label org.opencontainers.image.title="$(IMAGE_TITLE)" \
+    --label org.opencontainers.image.url="$(IMAGE_URL)" \
+    --label org.opencontainers.image.vendor="$(IMAGE_VENDOR)" \
+    --label org.opencontainers.image.version="$(VERSION)" \
     --label io.github.tprasadtp.build.system="$(IMAGE_BUILD_SYSTEM)" \
     --label io.github.tprasadtp.build.host="$(IMAGE_BUILD_HOST)" \
-    --label io.github.tprasadtp.build.date="$(IMAGE_BUILD_DATE)" \
     --label io.github.tprasadtp.actions.workflow="$(GITHUB_WORKFLOW)" \
     --label io.github.tprasadtp.actions.build="$(GITHUB_RUN_NUMBER)" \
     --label io.github.tprasadtp.actions.actor="$(GITHUB_ACTOR)" \
@@ -180,7 +179,7 @@ docker: ## Build docker image.
 .PHONY: docker-inspect
 docker-inspect:
 	@echo -e "\033[92m➜ $@ \033[0m"
-	docker $(DOCKER_INSPECT_ARGS) $(firstword $(DOCKER_TAGS)) $(DOCKER_INSPECT_PARSER)
+	docker $(DOCKER_INSPECT_ARGS)
 
 .PHONY: docker-push
 docker-push: ## Push docker image.
@@ -208,7 +207,6 @@ debug-docker-vars:
 	@echo "BUILDX_PLATFORMS     : $(BUILDX_PLATFORMS)"
 	@echo "DOCKER_BUILD_COMMAND : $(DOCKER_BUILD_COMMAND)"
 	@echo "DOCKER_INSPECT_ARGS  : $(DOCKER_INSPECT_ARGS)"
-	@echo "DOCKER_INSPECT_PARSER: $(DOCKER_INSPECT_PARSER)"
 	@echo "------------- ACTION VARIABLES ----------------"
 	@echo "GITHUB_ACTIONS       : $(GITHUB_ACTIONS)"
 	@echo "GITHUB_WORKFLOW      : $(GITHUB_WORKFLOW)"
@@ -225,3 +223,5 @@ debug-docker-vars:
 	@echo "VERSION              : $(VERSION)"
 	@echo "UPSTREAM_PRESENT     : $(UPSTREAM_PRESENT)"
 	@echo "UPSTREAM_ARGS        : $(UPSTREAM_ARGS)"
+
+# END-DOCKER-TEMPLATE
