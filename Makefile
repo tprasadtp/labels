@@ -1,160 +1,75 @@
+WATCHTOWER_BASE := $(strip $(patsubst %/, %, $(dir $(realpath $(firstword $(MAKEFILE_LIST))))))
+
+# Name of the project and docker image
+NAME  := labels
+
+# OCI Metadata
+IMAGE_TITLE             := Labels
+IMAGE_DESC              := CLI app for managing GitHub labels
+IMAGE_URL               := https://hub.docker.com/r/tprasadtp/labels
+IMAGE_SOURCE            := https://github.com/tprasadtp/labels
+IMAGE_LICENSES          := MIT
+IMAGE_DOCUMENTATION     := https://github.com/tprasadtp/mkdocs-material
+
+# docker tag related stuff
+DOCKER_TARGET      := release
+UPSTREAM_PRESENT   := true
+UPSTREAM_AUTHOR    := https://github.com/hackebrot
+UPSTREAM_URL       := https://github.com/hackebrot/labels
+
+VERSION            := $(shell python3 "$(WATCHTOWER_BASE)/scripts/getversion.py")
+
+# BEGIN-BASE-TEMPLATE
+
+# Set default goal to help, if not set already
+.DEFAULT_GOAL ?= help
+
 # Set the shell
 SHELL := /bin/bash
-NAME := labels
 
-ROOT_DIR := $(strip $(patsubst %/, %, $(dir $(realpath $(firstword $(MAKEFILE_LIST))))))
+# SEMVER_REGEX := ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
 
-ifeq ($(GITHUB_ACTIONS),true)
-	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#]+/-/g' )
-else
-	BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-	GITHUB_SHA := $(shell git rev-parse HEAD)
-	GITHUB_WORKFLOW := local
-	GITHUB_RUN_NUMBER := "0"
-endif
+.PHONY: help
+help: ## This help dialog.
+	@IFS=$$'\n' ; \
+    help_lines=(`fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##/:/' | sort -u`); \
+	printf "%-32s %s\n" " Target " "    Help " ; \
+    printf "%-32s %s\n" "--------" "------------" ; \
+    for help_line in $${help_lines[@]}; do \
+        IFS=$$':' ; \
+        help_split=($$help_line) ; \
+        help_command="$$(echo $${help_split[0]} | sed -e 's/^ *//' -e 's/ *$$//')" ; \
+        help_info="$$(echo $${help_split[2]} | sed -e 's/^ *//' -e 's/ *$$//')" ; \
+        printf '\033[92m'; \
+        printf "↠ %-30s %s" $$help_command ; \
+        printf '\033[0m'; \
+        printf "%s\n" $$help_info; \
+    done
 
+# END-BASE-TEMPLATE
 
-VERSION ?= $(shell python3 scripts/getversion.py )
-
-export PYTHONPATH :=$(ROOT_DIR)/src
-
-# Enable Buidkit if not disabled
-DOCKER_BUILDKIT ?= 1
-
-DOCKER_USER := tprasadtp
-
-# Prefix for github package registry images
-DOCKER_PREFIX_GITHUB := docker.pkg.github.com/$(DOCKER_USER)/$(NAME)
-
-
-.PHONY: all
-all: clean lint test dist docker-lint docker ## clean, lint, test, dist and docker
-
-.PHONY: docker-lint
-docker-lint: ## Lint Dockerfiles
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@docker run --rm -i hadolint/hadolint < Dockerfile
-
-.PHONY: docker-all
-docker-all: docker docker-action ## Build all docker images (Github Action and DockerHub image)
-
-.PHONY: docker
-docker: ## Build DockerHub image (runs as root inide docker)
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Building Docker Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target hub -t $(NAME) \
-		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
-		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
-		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
-		--build-arg VERSION=$(VERSION) $(ROOT_DIR)/.
-	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
-		docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
-		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
-		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
-		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
-	else \
-		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
-		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
-		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
-	fi
-
-.PHONY: docker-action
-docker-action: ## Build docker action image
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Building Action Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target action -t $(NAME)-action \
-		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
-		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
-		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
-		--build-arg VERSION=$(VERSION) $(ROOT_DIR)/.
-	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[95m * On master tagging as $(VERSION) and latest \033[0m"; \
-		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:latest; \
-		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:$(VERSION); \
-		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:latest; \
-		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
-	else \
-		echo -e "\033[95m * Not on master tagging as $(BRANCH).\033[0m"; \
-		docker tag $(NAME)-action $(DOCKER_USER)/$(NAME)-action:$(BRANCH); \
-		docker tag $(NAME)-action $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
-	fi
-
-
-.PHONY: docker-push
-docker-push: ## Push docker images (action and user images)
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Pushing User Image\033[0m"
-	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[93m   + On master add pushing latest and $(VERSION) to DockerHub\033[0m"; \
-		docker push $(DOCKER_USER)/$(NAME):latest; \
-		docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
-		echo -e "\033[93m   + On master add pushing latest and $(VERSION) to GitHub \033[0m"; \
-		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
-		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
-	else \
-		echo -e "\033[93m   + Not on master and pushing $(BRANCH) to DockerHub.\033[0m"; \
-		docker push $(DOCKER_USER)/$(NAME):$(BRANCH); \
-		echo -e "\033[93m   + Not on master and pushing $(BRANCH) to GitHub \033[0m"; \
-		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
-	fi
-	@echo -e "\033[95m * Pushing Action Image\033[0m"
-	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[93m   + On master add pushing latest and $(VERSION)[GitHub] \033[0m"; \
-		docker push $(DOCKER_PREFIX_GITHUB)/action:latest; \
-		docker push $(DOCKER_PREFIX_GITHUB)/action:$(VERSION); \
-		echo -e "\033[93m   + On master add pushing latest and $(VERSION)[DockerHub] \033[0m"; \
-		docker push $(DOCKER_USER)/$(NAME)-action:latest; \
-		docker push $(DOCKER_USER)/$(NAME)-action:$(VERSION); \
-	else \
-		echo -e "\033[93m   + Not on master as pushing $(BRANCH) [GitHub].\033[0m"; \
-		docker push $(DOCKER_PREFIX_GITHUB)/action:$(BRANCH); \
-		echo -e "\033[93m   + Not on master as pushing $(BRANCH) [DockerHub].\033[0m"; \
-		docker push $(DOCKER_USER)/$(NAME)-action:$(BRANCH); \
-	fi
-
-.PHONY: test
-test: ## Test and Lint
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * pytest\033[0m"
-	# @pytest --cov=src/labels -v --cov-report=xml
-	@pytest -v $(ROOT_DIR)
+# Docker
+include docker.mk
 
 .PHONY: isort
 isort: ## Run isort on all files
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Running isort...\033[0m"
-	@isort --recursive --atomic $(ROOT_DIR)/
+	@isort --recursive --atomic $(WATCHTOWER_BASE)
 
 .PHONY: isort-lint
 isort-lint: ## Check isort on all files
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Running isort...\033[0m"
-	@isort --recursive --check-only $(ROOT_DIR)/
-
-.PHONY: mypy
-mypy: ## Run mypy on files
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Running mypy...\033[0m"
-	@mypy $(ROOT_DIR)/src/labels
-
-.PHONY: flake8
-flake8: ## Run flake8
-	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Running flake8...\033[0m"
-	@flake8 $(ROOT_DIR)/
+	@isort --recursive --check-only $(WATCHTOWER_BASE)
 
 .PHONY: black
 black: ## Black formatter
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m * Black Formatting utils...\033[0m"
-	@black $(ROOT_DIR)/
+	@black $(WATCHTOWER_BASE)
 
 .PHONY: black-lint
 black-lint: ## Lint with Black
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[95m Linting utils...\033[0m"
-	@black --check $(ROOT_DIR)/
+	@black --check $(WATCHTOWER_BASE)
 
 .PHONY: fmt
 fmt: black isort ## Formatting using black  and isort (in that order)
@@ -162,10 +77,27 @@ fmt: black isort ## Formatting using black  and isort (in that order)
 .PHONY: fmt-lint
 fmt-lint: black-lint isort-lint ## Lint with formatters
 
+
+.PHONY: test
+test: ## Test and Lint
+	@echo -e "\033[92m➜ $@ \033[0m"
+	# @pytest --cov=src/labels -v --cov-report=xml
+	@pytest -v $(WATCHTOWER_BASE)
+
+.PHONY: mypy
+mypy: ## Run mypy on files
+	@echo -e "\033[92m➜ $@ \033[0m"
+	@mypy $(WATCHTOWER_BASE)/src/labels
+
+.PHONY: flake8
+flake8: ## Run flake8
+	@echo -e "\033[92m➜ $@ \033[0m"
+	@flake8 $(WATCHTOWER_BASE)/
+
 .PHONY: shellcheck
 shellcheck: ## Shellcheck
 	@echo -e "\033[92m➜ $@ \033[0m"
-	shellcheck $(ROOT_DIR)/entrypoint.sh
+	shellcheck $(WATCHTOWER_BASE)/entrypoint.sh
 
 .PHONY: lint
 lint: black-lint isort-lint flake8 mypy docker-lint ## lint everything (black, isort, flake8, mypy, docker)
@@ -191,32 +123,4 @@ clean: ## Clean
 .PHONY: install
 install: ## Same as poetry install with fixes
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@mkdir -p .venv/lib/python3.6/site-packages
-	@touch .venv/lib/python3.6/site-packages/easy-install.pth
 	@poetry install
-
-.PHONY: help
-help: ## This help dialog.
-	@IFS=$$'\n' ; \
-    help_lines=(`fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##/:/'`); \
-	printf "%-32s %s\n" " Target " "    Help " ; \
-    printf "%-32s %s\n" "--------" "------------" ; \
-    for help_line in $${help_lines[@]}; do \
-        IFS=$$':' ; \
-        help_split=($$help_line) ; \
-        help_command=`echo $${help_split[0]} | sed -e 's/^ *//' -e 's/ *$$//'` ; \
-        help_info=`echo $${help_split[2]} | sed -e 's/^ *//' -e 's/ *$$//'` ; \
-        printf '\033[92m'; \
-        printf "➜ %-30s %s" $$help_command ; \
-        printf '\033[0m'; \
-        printf "%s\n" $$help_info; \
-    done
-
-.PHONY: debug-vars
-debug-vars:
-	@echo "GITHUB_ACTIONS: ${GITHUB_ACTIONS}"
-	@echo "VERSION: ${VERSION}"
-	@echo "BRANCH: ${BRANCH}"
-	@echo "GITHUB_SHA: ${GITHUB_SHA}"
-	@echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
-	@echo "GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}"

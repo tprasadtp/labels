@@ -54,7 +54,7 @@ name: labels
 jobs:
   labels:
     - name: sync labels
-      uses: tprasadtp/labels@0.3.0.20200214 # Use latest version available.
+      uses: tprasadtp/labels@0.3.0+tprasadtp # Use latest version available.
       with:
         # owner: "OWNERNAME" # Optional
         # repo: "REPONAME"   # Optional
@@ -62,9 +62,9 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-- If `owner` or `repo` are not specified, values will be calculated from `GITHUNB_REPOSITORY`.
-- If file specified is not found, then an attempt is made to fetch it from github.
-- You can use those parameters to set labels on multiple repos (use matrix expansion for faster builds).
+- If `owner` or `repo` are not specified, values will be calculated from `GITHUB_REPOSITORY` env variable.
+- If file specified is not found, then an attempt is made to fetch it from GitHub.
+- To set labels on multiple repos (use matrix expansion for faster builds).
 However, You must specify a personal access token with scope `repo` or `public_repo`.
 
 ## Authentication

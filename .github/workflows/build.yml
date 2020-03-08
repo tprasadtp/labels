@@ -74,54 +74,79 @@ jobs:
     - name: Build
       run: make dist
 
-    - name: Export Version
-      id: version
-      run: |
-        poetry run python3 ./scripts/getversion.py | tee -a VERSION.txt
-        echo "::set-output name=VERSION::$(cat VERSION.txt)"
-
   # Build docker images
   docker:
-    needs: test
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Lint Dockerfiles
-        run: |
-          make shellcheck
-          make docker-lint
-
-      - name: Set up Python
-        uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          persist-credentials: false
 
-      - name: Install Pytoml
-        run: pip install pytoml
+      - name: Docker Lint
+        run: make docker-lint
 
-      - name: Build Docker
+      - name: Download BuildX
         run: |
-          make debug-vars
-          make docker-all
+          curl -sSfL https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -o buildx
+          mkdir -p ${HOME}/.docker/cli-plugins
+          cp buildx ${HOME}/.docker/cli-plugins/docker-buildx
+          chmod a+x ${HOME}/.docker/cli-plugins/docker-buildx
 
-      - name: Docker Login to Registry (GitHub)
-        run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+      - name: Install
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get install -y -qq qemu-user
+          sudo docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
+
+      - name: Info
+        run: |
+          cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+          docker info
+          docker buildx version
+
+      - name: Create Builder
+        run: |
+          docker buildx create --name actions
+          docker buildx use actions
+          docker buildx inspect --bootstrap
+
+      # - name: Docker Login to Registry (GitHub)
+      #   run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
+      #   env:
+      #     DOCKER_USERNAME: tprasadtp
+      #     DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      #   if: github.event_name	== 'push' || ( github.event_name == 'pull' &&  github.actor	== 'tprasadtp' )
 
       - name: Docker Login to Registry (DockerHub)
         run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         env:
           DOCKER_USERNAME: tprasadtp
-          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        if: github.event_name	== 'push'
 
-      - name: Docker Push
-        run: make docker-push
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+      - name: Docker Build [With Push]
+        run: |
+            make debug-docker-vars
+            make docker
+            make docker-inspect
+        env:
+          BUILDX_PUSH: 1
+          BUILDX_ENABLE: 1
+        if: github.event_name == 'push'
+
+      # No Push
+      - name: Docker Build [Skip Push]
+        run: |
+            make debug-docker-vars
+            make docker
+        env:
+          BUILDX_PUSH: 0
+          BUILDX_ENABLE: 1
+        if: github.event_name == 'pull_request'
 
       - name: Docker Cleanup
-        run: docker logout && rm -f ${HOME}/.docker/config.json
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+        run: |
+          docker logout || true
+          rm -f ${HOME}/.docker/config.json
+        if: github.event_name	== 'push'

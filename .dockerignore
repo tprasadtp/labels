@@ -44,9 +44,9 @@ scripts
 *.xml
 .vscode
 *.txt
-scripts
+scripts/
 .editorconfig
 _config.yml
 .hadolint.yaml
-action.yml
 poetry.*
+*.mk
