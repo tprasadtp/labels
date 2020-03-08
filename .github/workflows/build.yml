@@ -1,13 +1,17 @@
 name: build
 on:
   push:
+    branches:
+      - "**"
     paths-ignore:
       - ".gitignore"
       - ".envrc"
-      - "**.md"
       - ".vscode/**"
-      - ".dependabot/**"
-      - "_config.yml"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - ".github/workflows/labels.yml"
+      - ".github/labels.toml"
+      - ".github/**/*.md"
     tags-ignore:
       - "v*"
   pull_request:
