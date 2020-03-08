@@ -9,14 +9,11 @@ DOCKER_CONTEXT_DIR ?= $(WATCHTOWER_BASE)
 # Full path, including filename for Dockerfile. If not specified, WATCHTOWER_BASE/Dockerfile is assumed
 DOCKERFILE_PATH ?= $(WATCHTOWER_BASE)/Dockerfile
 
-# Default target is 0.
-DOCKER_TARGET ?= 0
-
 # Squash Image Layers
 DOCKER_SQUASH ?= 0
 
 # Extra Arguments, useful to pass --build-arg.
-DOCKER_EXTRA_ARGS ?=
+# DOCKER_EXTRA_ARGS
 
 # Enable Buidkit if not already disabled
 DOCKER_BUILDKIT ?= 1
@@ -28,8 +25,8 @@ DOCKER_USER ?= tprasadtp
 UPSTREAM_PRESENT ?= false
 
 # We MUST also set below two variables, if UPSTREAM_PRESENT is true
-UPSTREAM_AUTHOR  ?=
-UPSTREAM_PRESENT ?=
+# UPSTREAM_AUTHOR
+# UPSTREAM_PRESENT
 
 # Use buildx
 BUILDX_ENABLE    ?= 0
@@ -109,8 +106,6 @@ endif
 #      e. And finally create a new commit on master which SHOULD JUST INCLUDE the version bump.
 #      So that way, all tagged commit will reflect to tagged dockerfiles, and master brach will reflect NEXT VERSION.
 
-# If not defined, we will set this to empty
-VERSION ?=
 
 # Now start building docker tags
 # If we are on master and VERSION is set, add additional tag USERNAME/NAME:VERSION
@@ -132,6 +127,10 @@ endif
 # Build --tag argument
 DOCKER_TAG_ARGS := $(addprefix --tag ,$(DOCKER_TAGS))
 
+# IF DOCKER_TARGET is defined, use it
+ifneq ($(DOCKER_TARGET),)
+	DOCKER_BUILD_COMMAND += --target "$(DOCKER_TARGET)"
+endif
 
 ifeq ($(UPSTREAM_PRESENT),true)
 	UPSTREAM_ARGS := --label io.github.tprasadtp.upstream.author="$(UPSTREAM_AUTHOR)"
