@@ -27,7 +27,7 @@ labels = "labels.cli:labels"
 [tool.poetry.dependencies]
 python = ">=3.6"
 attrs = "*"
-click = "~7.0"
+click = "~7.1"
 pytoml = "~0.1.21"
 requests = "~2.22.0"
 
