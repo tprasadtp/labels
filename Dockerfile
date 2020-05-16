@@ -1,4 +1,4 @@
-FROM python:3.8.2-alpine as base
+FROM python:3.8.3-alpine as base
 
 # Builder Stage
 FROM base as builder
