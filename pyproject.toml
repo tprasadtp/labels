@@ -36,7 +36,7 @@ flake8 = "*"
 mypy = "*"
 pytest = "~5.2"
 responses = "*"
-pytest-mock = "~2.0"
+pytest-mock = "~3.2"
 isort = { version = "*", extras = ["pyproject"] }
 black = "^19.10b0"
 
