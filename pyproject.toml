@@ -38,7 +38,7 @@ pytest = "~5.2"
 responses = "*"
 pytest-mock = "~2.0"
 isort = { version = "*", extras = ["pyproject"] }
-black = "^19.10b0"
+black = "^20.8b0"
 
 [build-system]
 requires = ["poetry>=1.0.2"]
